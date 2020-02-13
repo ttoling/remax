@@ -16,16 +16,25 @@ export default class VNode {
   container: Container;
   headChild: VNode | null = null;
   next: VNode | null = null;
-  prev: VNode | null = null;
   lastChild: VNode | null = null;
-  childrenSize: number = 0;
+  childrenSize = 0;
   mounted = false;
   type: string;
   props?: any;
   parent: VNode | null = null;
   text?: string;
 
-  constructor({ id, type, props, container }: { id: number; type: string; props?: any; container: any }) {
+  constructor({
+    id,
+    type,
+    props,
+    container,
+  }: {
+    id: number;
+    type: string;
+    props?: any;
+    container: any;
+  }) {
     this.id = id;
     this.container = container;
     this.type = type;
@@ -74,14 +83,19 @@ export default class VNode {
     this.lastChild = node;
     this.childrenSize += 1;
 
-
     if (this.isMounted()) {
-      this.container.requestUpdate([...this.path(), 'children'], this.childrenSize - 1, 0, immediately, node.toJSON());
+      this.container.requestUpdate(
+        [...this.path(), 'children'],
+        this.childrenSize - 1,
+        0,
+        immediately,
+        node.toJSON()
+      );
     }
   }
 
   removeChild(node: VNode, immediately: boolean) {
-    let index = this.findChildIndex(node);
+    const index = this.findChildIndex(node);
     if (node.prev) {
       node.prev.next = node.next;
       this.headChild = node.prev;
@@ -99,7 +113,12 @@ export default class VNode {
     }
     this.childrenSize -= 1;
     if (this.isMounted()) {
-      this.container.requestUpdate([...this.path(), 'children'], index, 1, immediately);
+      this.container.requestUpdate(
+        [...this.path(), 'children'],
+        index,
+        1,
+        immediately
+      );
     }
   }
 
@@ -122,7 +141,13 @@ export default class VNode {
     this.childrenSize += 1;
 
     if (this.isMounted()) {
-      this.container.requestUpdate([...this.path(), 'children'], index, 0, immediately, newNode.toJSON());
+      this.container.requestUpdate(
+        [...this.path(), 'children'],
+        index,
+        0,
+        immediately,
+        newNode.toJSON()
+      );
     }
   }
 
@@ -133,7 +158,7 @@ export default class VNode {
       this.parent!.findChildIndex(this),
       1,
       false,
-      this.toJSON(),
+      this.toJSON()
     );
   }
 
@@ -141,7 +166,11 @@ export default class VNode {
     if (!this.parent) {
       return ['root'];
     }
-    return [...this.parent.path(), 'children', this.parent.findChildIndex(this)];
+    return [
+      ...this.parent.path(),
+      'children',
+      this.parent.findChildIndex(this),
+    ];
   }
 
   isMounted(): boolean {
@@ -154,9 +183,6 @@ export default class VNode {
         type: this.type,
         text: this.text,
       };
-    }
-    if (!this.headChild) {
-      debugger
     }
     const children = [];
     let current = this.headChild;
