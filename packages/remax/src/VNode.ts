@@ -14,78 +14,115 @@ export type Path = Array<string | number>;
 export default class VNode {
   id: number;
   container: Container;
-  children: VNode[];
+  headChild: VNode | null = null;
+  next: VNode | null = null;
+  prev: VNode | null = null;
+  lastChild: VNode | null = null;
+  childrenSize: number = 0;
   mounted = false;
   type: string;
   props?: any;
   parent: VNode | null = null;
   text?: string;
 
-  constructor({
-    id,
-    type,
-    props,
-    container,
-  }: {
-    id: number;
-    type: string;
-    props?: any;
-    container: any;
-  }) {
+  constructor({ id, type, props, container }: { id: number; type: string; props?: any; container: any }) {
     this.id = id;
     this.container = container;
     this.type = type;
     this.props = props;
-    this.children = [];
+  }
+
+  findChild(child: VNode | null) {
+    let current = this.headChild;
+    while (current !== null) {
+      if (current.id === child?.id) {
+        return current;
+      }
+      current = current.next;
+    }
+    return null;
+  }
+
+  findChildIndex(child: VNode) {
+    let current = this.headChild;
+    let index = 0;
+    while (current !== null) {
+      if (current.id === child.id) {
+        return index;
+      }
+      current = current.next;
+      index += 1;
+    }
+    return -1;
   }
 
   appendChild(node: VNode, immediately: boolean) {
     node.parent = this;
-    if (this.children.find(child => child.id === node.id)) {
+    node.next = null;
+    node.prev = null;
+
+    if (this.findChild(node)) {
       this.removeChild(node, immediately);
     }
 
-    this.children.push(node);
+    if (!this.headChild) {
+      this.headChild = node;
+    } else {
+      node.prev = this.lastChild;
+      this.lastChild!.next = node;
+    }
+    this.lastChild = node;
+    this.childrenSize += 1;
+
+
     if (this.isMounted()) {
-      this.container.requestUpdate(
-        [...this.path(), 'children'],
-        this.children.length - 1,
-        0,
-        immediately,
-        node.toJSON()
-      );
+      this.container.requestUpdate([...this.path(), 'children'], this.childrenSize - 1, 0, immediately, node.toJSON());
     }
   }
 
   removeChild(node: VNode, immediately: boolean) {
-    const start = this.children.indexOf(node);
-    this.children.splice(start, 1);
+    let index = this.findChildIndex(node);
+    if (node.prev) {
+      node.prev.next = node.next;
+      this.headChild = node.prev;
+      if (this.lastChild?.id === node.id) {
+        this.lastChild = node.prev;
+      }
+    } else {
+      this.headChild = node.next;
+      if (this.lastChild?.id === node.id) {
+        this.lastChild = null;
+      }
+    }
+    if (node.next) {
+      node.next.prev = node.prev;
+    }
+    this.childrenSize -= 1;
     if (this.isMounted()) {
-      this.container.requestUpdate(
-        [...this.path(), 'children'],
-        start,
-        1,
-        immediately
-      );
+      this.container.requestUpdate([...this.path(), 'children'], index, 1, immediately);
     }
   }
 
   insertBefore(newNode: VNode, referenceNode: VNode, immediately: boolean) {
     newNode.parent = this;
-    if (this.children.find(child => child.id === newNode.id)) {
+
+    if (this.findChild(newNode)) {
       this.removeChild(newNode, immediately);
     }
 
-    const start = this.children.indexOf(referenceNode);
-    this.children.splice(start, 0, newNode);
+    const index = this.findChildIndex(referenceNode);
+
+    if (referenceNode.prev) {
+      referenceNode.prev.next = newNode;
+    } else {
+      this.headChild = newNode;
+    }
+    newNode.next = referenceNode;
+    referenceNode.prev = newNode;
+    this.childrenSize += 1;
+
     if (this.isMounted()) {
-      this.container.requestUpdate(
-        [...this.path(), 'children'],
-        start,
-        0,
-        immediately,
-        newNode.toJSON()
-      );
+      this.container.requestUpdate([...this.path(), 'children'], index, 0, immediately, newNode.toJSON());
     }
   }
 
@@ -93,10 +130,10 @@ export default class VNode {
     // root 不会更新，所以肯定有 parent
     this.container.requestUpdate(
       [...this.parent!.path(), 'children'],
-      this.parent!.children.indexOf(this),
+      this.parent!.findChildIndex(this),
       1,
       false,
-      this.toJSON()
+      this.toJSON(),
     );
   }
 
@@ -104,11 +141,7 @@ export default class VNode {
     if (!this.parent) {
       return ['root'];
     }
-    return [
-      ...this.parent.path(),
-      'children',
-      this.parent.children.indexOf(this),
-    ];
+    return [...this.parent.path(), 'children', this.parent.findChildIndex(this)];
   }
 
   isMounted(): boolean {
@@ -122,11 +155,21 @@ export default class VNode {
         text: this.text,
       };
     }
+    if (!this.headChild) {
+      debugger
+    }
+    const children = [];
+    let current = this.headChild;
+    while (current !== null) {
+      children.push(current.toJSON());
+      current = current.next;
+    }
+
     return {
       id: this.id,
       type: this.type,
       props: this.props,
-      children: this.children && this.children.map(c => c.toJSON()),
+      children: children,
       text: this.text,
     };
   }

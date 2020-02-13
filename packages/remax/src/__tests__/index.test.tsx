@@ -74,7 +74,7 @@ describe('remax render', () => {
     expect(container.root).toMatchSnapshot();
   });
 
-  it("change elements' order", () => {
+  fit("change elements' order", () => {
     class Page extends React.Component {
       state = {
         list: [1, 2, 3],
