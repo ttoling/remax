@@ -48,7 +48,7 @@ require('../../npm/remax/npm/remax-alipay/esm/api/index.js');
 function _ref() {
   return React.createElement(index$2.default, {
     _tid: "6"
-  }, React.createElement("void-block", null));
+  }, React.createElement("stub-block", null));
 }
 
 var index = Page(createPageConfig.default(_ref));

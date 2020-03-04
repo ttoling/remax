@@ -50,7 +50,7 @@ export default {
   },
 
   shouldSetTextContent(type: string) {
-    return type === 'void-block';
+    return type === 'stub-block';
   },
 
   prepareForCommit: () => {

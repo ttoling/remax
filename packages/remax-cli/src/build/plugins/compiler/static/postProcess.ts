@@ -1,7 +1,7 @@
 import * as t from '@babel/types';
 import { NodePath } from '@babel/traverse';
 import * as helpers from './helpers';
-import { VOID_BLOCK, TEMPLATE_ID } from './constants';
+import { STUB_BLOCK, TEMPLATE_ID } from './constants';
 
 function shouldRemoveAttribute(
   attribute: t.JSXAttribute | t.JSXSpreadAttribute
@@ -37,13 +37,13 @@ function shouldRemoveAttribute(
 }
 
 /**
- * 判断是否是一个可以置空的元素
+ * 判断是否是一个可以 stub 的元素
  *
  * @param {t.JSXElement} node
  * @returns
  */
-function isVoidElement(node: t.JSXElement) {
-  if ((node.openingElement.name as any)?.name === VOID_BLOCK) {
+function isStubElement(node: t.JSXElement) {
+  if ((node.openingElement.name as any)?.name === STUB_BLOCK) {
     return true;
   }
 
@@ -51,7 +51,7 @@ function isVoidElement(node: t.JSXElement) {
   const isSelfVoid = attributes.every(shouldRemoveAttribute);
   const isChildrenVoid = node.children.every(c => {
     if (t.isJSXElement(c)) {
-      return isVoidElement(c);
+      return isStubElement(c);
     }
 
     if (t.isJSXText(c)) {
@@ -87,12 +87,12 @@ export default function postProcess() {
       JSXElement: (path: NodePath<t.JSXElement>) => {
         const node = path.node;
 
-        if ((node.openingElement.name as any)?.name === VOID_BLOCK) {
+        if ((node.openingElement.name as any)?.name === STUB_BLOCK) {
           return;
         }
 
-        if (isVoidElement(node)) {
-          helpers.replacedWithVoidBlock(node, path);
+        if (isStubElement(node)) {
+          helpers.replacedWithStubBlock(node, path);
         }
       },
       JSXExpressionContainer: (path: NodePath<t.JSXExpressionContainer>) => {

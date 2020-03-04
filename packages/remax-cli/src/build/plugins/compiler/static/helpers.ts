@@ -5,7 +5,7 @@ import {
   EXPRESSION_BLOCK,
   LEAF,
   TEMPLATE_ID,
-  VOID_BLOCK,
+  STUB_BLOCK,
 } from './constants';
 
 /**
@@ -318,17 +318,17 @@ export function replacedWithBlock(
 }
 
 /**
- * 将标签替换为 <void-block>
+ * 将标签替换为 <stub-block>
  *
  * @export
  * @param {(t.JSXElement)} node
  * @param {NodePath} path
  */
-export function replacedWithVoidBlock(node: t.JSXElement, path: NodePath) {
+export function replacedWithStubBlock(node: t.JSXElement, path: NodePath) {
   path.replaceWith(
     t.jsxElement(
-      t.jsxOpeningElement(t.jsxIdentifier(VOID_BLOCK), []),
-      t.jsxClosingElement(t.jsxIdentifier(VOID_BLOCK)),
+      t.jsxOpeningElement(t.jsxIdentifier(STUB_BLOCK), []),
+      t.jsxClosingElement(t.jsxIdentifier(STUB_BLOCK)),
       [],
       false
     )

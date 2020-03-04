@@ -54,7 +54,7 @@ function ReactComp(_ref) {
   var children = _ref.children;
   return React.createElement(index$2.default, {
     _tid: "1"
-  }, React.createElement("void-block", null), React.createElement("expression-block", null, React.Children.map(children, function (child, index) {
+  }, React.createElement("stub-block", null), React.createElement("expression-block", null, React.Children.map(children, function (child, index) {
     return React.cloneElement(child, {
       id: 'reactComp' + index
     });
@@ -81,9 +81,9 @@ function _ref2() {
   var plainText = 'plain-text-leaf';
   return React.createElement("block", {
     _tid: "2"
-  }, React.createElement("void-block", null), React.createElement("void-block", null), React.createElement("void-block", null), React.createElement("void-block", null), React.createElement("void-block", null), React.createElement("expression-block", null, React.createElement(ReactComp, null, React.createElement("void-block", null), React.createElement("expression-block", null))), React.createElement(index$2.default, null, "Count: ", React.createElement("expression-block", null, count)), React.createElement(index$2.default, {
+  }, React.createElement("stub-block", null), React.createElement("stub-block", null), React.createElement("stub-block", null), React.createElement("stub-block", null), React.createElement("stub-block", null), React.createElement("expression-block", null, React.createElement(ReactComp, null, React.createElement("stub-block", null), React.createElement("expression-block", null))), React.createElement(index$2.default, null, "Count: ", React.createElement("expression-block", null, count)), React.createElement(index$2.default, {
     id: count
-  }, "view"), React.createElement("void-block", null), React.createElement("expression-block", null, React.createElement('view', {
+  }, "view"), React.createElement("stub-block", null), React.createElement("expression-block", null, React.createElement('view', {
     id: 'view'
   }, [React.createElement(index$2.default, {
     _tid: "3"
@@ -94,9 +94,9 @@ function _ref2() {
       key: item,
       _tid: "4"
     }, "array map: ", React.createElement("expression-block", null, item));
-  })), React.createElement(index$2.default, props, "Spread Attributes View"), React.createElement("void-block", null), React.createElement("void-block", null), React.createElement("expression-block", null), React.createElement("void-block", null), React.createElement("void-block", null), React.createElement("expression-block", null, show && React.createElement(index$2.default, {
+  })), React.createElement(index$2.default, props, "Spread Attributes View"), React.createElement("stub-block", null), React.createElement("stub-block", null), React.createElement("expression-block", null), React.createElement("stub-block", null), React.createElement("stub-block", null), React.createElement("expression-block", null, show && React.createElement(index$2.default, {
     _tid: "5"
-  }, "Conditional View")), React.createElement(index$b.default, null, showPlainText && plainText, " ", showPlainText && '第二段', showPlainText && plainText), React.createElement("void-block", null));
+  }, "Conditional View")), React.createElement(index$b.default, null, showPlainText && plainText, " ", showPlainText && '第二段', showPlainText && plainText), React.createElement("stub-block", null));
 }
 
 var index = Page(createPageConfig.default(_ref2));
