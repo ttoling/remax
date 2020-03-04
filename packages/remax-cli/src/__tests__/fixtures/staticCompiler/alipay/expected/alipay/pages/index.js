@@ -20,7 +20,7 @@ require('../../npm/remax/npm/remax-alipay/esm/hostComponents/MovableArea/index.j
 require('../../npm/remax/npm/remax-alipay/esm/hostComponents/CoverView/index.js');
 require('../../npm/remax/npm/remax-alipay/esm/hostComponents/CoverImage/index.js');
 require('../../npm/remax/npm/remax-alipay/esm/hostComponents/Icon/index.js');
-var index$b = require('../../npm/remax/npm/remax-alipay/esm/hostComponents/Text/index.js');
+var index$9 = require('../../npm/remax/npm/remax-alipay/esm/hostComponents/Text/index.js');
 require('../../npm/remax/npm/remax-alipay/esm/hostComponents/RichText/index.js');
 require('../../npm/remax/npm/remax-alipay/esm/hostComponents/Progress/index.js');
 require('../../npm/remax/npm/remax-alipay/esm/hostComponents/Button/index.js');
@@ -46,8 +46,15 @@ require('../../npm/remax/npm/remax-alipay/esm/hostComponents/Lifestyle/index.js'
 require('../../npm/remax/npm/remax-alipay/esm/hostComponents/ContactButton/index.js');
 require('../../npm/remax/npm/remax-alipay/esm/hostComponents/Video/index.js');
 require('../../npm/remax/npm/remax-alipay/esm/api/index.js');
+var index$z = require('../npm/remax-window/index.js');
 
 var NativeComponent = createNativeComponent.default('native-component-0');
+var RenameView = index$2.default;
+var Deep = {
+  Object: {
+    View: index$2.default
+  }
+};
 var DDD = createHostComponent.default('ddd');
 
 function ReactComp(_ref) {
@@ -79,24 +86,67 @@ function _ref2() {
       showPlainText = _React$useState6[0];
 
   var plainText = 'plain-text-leaf';
-  return React.createElement("block", {
+  return React.createElement(React.Fragment, null, "JSXText entry", React.createElement("expression-block", {
     _tid: "2"
-  }, React.createElement("stub-block", null), React.createElement("stub-block", null), React.createElement("stub-block", null), React.createElement("stub-block", null), React.createElement("stub-block", null), React.createElement("expression-block", null, React.createElement(ReactComp, null, React.createElement("stub-block", null), React.createElement("expression-block", null))), React.createElement(index$2.default, null, "Count: ", React.createElement("expression-block", null, count)), React.createElement(index$2.default, {
-    id: count
-  }, "view"), React.createElement("stub-block", null), React.createElement("expression-block", null, React.createElement('view', {
+  }, 'expression entry'), React.createElement(React.Fragment, null, React.createElement(index$9.default, {
+    _tid: "3"
+  }, "Fragment Text 1"), React.createElement(index$9.default, {
+    _tid: "4"
+  }, "Fragment Text 2"), React.createElement(React.Fragment, null, React.createElement(index$9.default, {
+    _tid: "5"
+  }, "Fragment Text 3"), React.createElement(index$9.default, {
+    _tid: "6"
+  }, "Fragment Text 4"))), React.createElement(React.Fragment, null, "Fragment"), React.createElement(React.Fragment, null, "React.Fragment"), React.createElement("expression-block", {
+    _tid: "7"
+  }, React.createElement(DDD, null)), React.createElement(index$9.default, {
+    _tid: "8"
+  }, "Remax.Text"), React.createElement("expression-block", {
+    _tid: "9"
+  }, React.createElement(NativeComponent, null)), React.createElement("expression-block", {
+    _tid: "10"
+  }, React.createElement(ReactComp, null, React.createElement("stub-block", null), React.createElement("expression-block", null, 'React Component Second Child'))), React.createElement(index$2.default, {
+    _tid: "11"
+  }, "Count: ", React.createElement("expression-block", null, count)), React.createElement(index$2.default, {
+    id: count,
+    _tid: "12"
+  }, "view"), React.createElement(index$2.default, {
+    _tid: "13"
+  }, "custom view"), React.createElement("expression-block", {
+    _tid: "14"
+  }, React.createElement('view', {
     id: 'view'
   }, [React.createElement(index$2.default, {
-    _tid: "3"
+    _tid: "25"
   }, "create element children 1"), React.createElement('view', {
     key: '2'
-  })])), React.createElement("expression-block", null, [1, 2, 3].map(function (item) {
+  })])), React.createElement("expression-block", {
+    _tid: "15"
+  }, [1, 2, 3].map(function (item) {
     return React.createElement(index$2.default, {
       key: item,
-      _tid: "4"
+      _tid: "26"
     }, "array map: ", React.createElement("expression-block", null, item));
-  })), React.createElement(index$2.default, props, "Spread Attributes View"), React.createElement("stub-block", null), React.createElement("stub-block", null), React.createElement("expression-block", null), React.createElement("stub-block", null), React.createElement("stub-block", null), React.createElement("expression-block", null, show && React.createElement(index$2.default, {
-    _tid: "5"
-  }, "Conditional View")), React.createElement(index$b.default, null, showPlainText && plainText, " ", showPlainText && '第二段', showPlainText && plainText), React.createElement("stub-block", null));
+  })), React.createElement(index$2.default, _rollupPluginBabelHelpers.extends({}, props, {
+    _tid: "16"
+  }), "Spread Attributes View"), React.createElement(index$9.default, {
+    _tid: "17"
+  }, "long long long long long long long long long long long long text long long long long long long long long long long long long text"), React.createElement("expression-block", {
+    _tid: "18"
+  }, React.createElement(index$z.default, null)), React.createElement("expression-block", {
+    _tid: "19"
+  }, 'Literal Expression'), React.createElement("expression-block", {
+    _tid: "20"
+  }, React.createElement(Deep.Object.View, null, "Deep Object View")), React.createElement("expression-block", {
+    _tid: "21"
+  }, React.createElement(RenameView, null, "Rename View")), React.createElement("expression-block", {
+    _tid: "22"
+  }, show && React.createElement(index$2.default, {
+    _tid: "27"
+  }, "Conditional View")), React.createElement(index$9.default, {
+    _tid: "23"
+  }, showPlainText && plainText, " ", showPlainText && '第二段', ' ', showPlainText && plainText), React.createElement(index$2.default, {
+    _tid: "24"
+  }));
 }
 
 var index = Page(createPageConfig.default(_ref2));

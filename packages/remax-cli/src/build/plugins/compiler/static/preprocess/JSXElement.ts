@@ -14,9 +14,9 @@ export default function JSXElement(path: NodePath<t.JSXElement>) {
   const node = path.node;
 
   // case: React.Fragment
-  // React Fragment 处理方式同 JSXFragment
+  // 将 React Fragment 转换成 JSXFragment，方便处理
   if (helpers.isReactFragment(node, path)) {
-    helpers.replacedWithBlock(node, path);
+    helpers.replacedWithJSXFragment(node, path);
     return;
   }
 

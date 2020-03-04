@@ -35,6 +35,16 @@ export default function Index() {
   const plainText = 'plain-text-leaf';
   return (
     <>
+      JSXText entry
+      {'expression entry'}
+      <Fragment>
+        <Text>Fragment Text 1</Text>
+        <Text>Fragment Text 2</Text>
+        <Fragment>
+          <Text>Fragment Text 3</Text>
+          <Text>Fragment Text 4</Text>
+        </Fragment>
+      </Fragment>
       {/* 注释 */}
       <Fragment>Fragment</Fragment>
       <React.Fragment>React.Fragment</React.Fragment>

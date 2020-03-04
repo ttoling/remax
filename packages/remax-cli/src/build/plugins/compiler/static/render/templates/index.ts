@@ -4,6 +4,7 @@ import { NodePath } from '@babel/traverse';
 import JSXElement from './JSXElement';
 import JSXExpressionContainer from './JSXExpressionContainer';
 import TemplateInfoSet from './TemplateInfoSet';
+import { RenderNode } from '../../types';
 
 export const templateInfoSet = new TemplateInfoSet();
 
@@ -17,30 +18,30 @@ export const templateInfoSet = new TemplateInfoSet();
  * @returns {string}
  */
 export function createTemplate(
-  element:
-    | t.JSXElement
-    | t.JSXText
-    | t.JSXFragment
-    | t.JSXExpressionContainer
-    | t.JSXSpreadChild,
-  path: NodePath<t.JSXElement>,
+  element: RenderNode,
+  path: NodePath,
   module: string,
   dataPath: Array<string | number>
 ): string {
-  if (t.isJSXElement(element)) {
-    return JSXElement(element, path, dataPath, createTemplate);
+  if (t.isJSXElement(element.node)) {
+    return JSXElement(
+      element as RenderNode<t.JSXElement>,
+      path,
+      dataPath,
+      createTemplate
+    );
   }
 
-  if (t.isJSXExpressionContainer(element)) {
-    return JSXExpressionContainer(element, dataPath);
+  if (t.isJSXExpressionContainer(element.node)) {
+    return JSXExpressionContainer(element.node, dataPath);
   }
 
-  if (t.isJSXText(element)) {
-    return `{{'${helpers.normalizeLiteral(element.value)}'}}`;
+  if (t.isJSXText(element.node)) {
+    return `{{'${helpers.normalizeLiteral(element.node.value)}'}}`;
   }
 
   // case: JSXFragment
-  // JSXFragment 已经都被预处理成 block 标签，所以不存在
+  // JSXFragment 已经被过滤，不存在
 
   // case: JSXSpreadChild
   // 未知使用场景

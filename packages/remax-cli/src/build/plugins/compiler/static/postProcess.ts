@@ -1,19 +1,16 @@
 import * as t from '@babel/types';
 import { NodePath } from '@babel/traverse';
 import * as helpers from './helpers';
-import { STUB_BLOCK, TEMPLATE_ID } from './constants';
+import { STUB_BLOCK, TEMPLATE_ID, EXPRESSION_BLOCK, ENTRY } from './constants';
 
-function shouldRemoveAttribute(
-  attribute: t.JSXAttribute | t.JSXSpreadAttribute
-) {
+function isStubAttribute(attribute: t.JSXAttribute | t.JSXSpreadAttribute) {
   if (t.isJSXSpreadAttribute(attribute)) {
     return false;
   }
 
   const attrName = attribute.name.name;
 
-  // TEMPLATE_ID 不能删
-  if (attrName === TEMPLATE_ID) {
+  if (attrName === TEMPLATE_ID || attrName === ENTRY) {
     return false;
   }
 
@@ -39,33 +36,56 @@ function shouldRemoveAttribute(
 /**
  * 判断是否是一个可以 stub 的元素
  *
- * @param {t.JSXElement} node
+ * @param {t.JSXElement|t.JSXFragment} node
  * @returns
  */
-function isStubElement(node: t.JSXElement) {
-  if ((node.openingElement.name as any)?.name === STUB_BLOCK) {
-    return true;
+function isStubElement(node: t.JSXElement | t.JSXFragment, path: NodePath) {
+  let isSelfStub = false;
+
+  if (t.isJSXFragment(node)) {
+    isSelfStub = true;
   }
 
-  const attributes = node.openingElement.attributes;
-  const isSelfVoid = attributes.every(shouldRemoveAttribute);
+  if (t.isJSXElement(node)) {
+    const name = (node.openingElement.name as any)?.name;
+
+    if (name === STUB_BLOCK) {
+      return true;
+    }
+
+    if (name === EXPRESSION_BLOCK) {
+      return false;
+    }
+
+    if (!helpers.isHostComponentElement(node, path)) {
+      return false;
+    }
+
+    const attributes = node.openingElement.attributes;
+    isSelfStub = attributes.every(isStubAttribute);
+  }
+
   const isChildrenVoid = node.children.every(c => {
-    if (t.isJSXElement(c)) {
-      return isStubElement(c);
+    if (t.isJSXElement(c) || t.isJSXFragment(c)) {
+      return isStubElement(c, path);
     }
 
     if (t.isJSXText(c)) {
       return true;
     }
 
-    // case: JSXExpressionContainer，还没被删除的表达式都是不能静态化的
+    if (t.isJSXExpressionContainer(c)) {
+      if (t.isLiteral(c.expression)) {
+        return true;
+      }
+    }
+
     // case: JSXSpreadChild
-    // case: JSXFragment，JSXFragment 已经被替换掉了
 
     return false;
   });
 
-  return isSelfVoid && isChildrenVoid;
+  return isSelfStub && isChildrenVoid;
 }
 
 /**
@@ -78,12 +98,6 @@ function isStubElement(node: t.JSXElement) {
 export default function postProcess() {
   return {
     visitor: {
-      // 将所有静态的属性都删除
-      JSXAttribute: (path: NodePath<t.JSXAttribute>) => {
-        if (shouldRemoveAttribute(path.node)) {
-          path.remove();
-        }
-      },
       JSXElement: (path: NodePath<t.JSXElement>) => {
         const node = path.node;
 
@@ -91,15 +105,18 @@ export default function postProcess() {
           return;
         }
 
-        if (isStubElement(node)) {
-          helpers.replacedWithStubBlock(node, path);
+        // 非 host component 不处理
+        if (!helpers.isHostComponentElement(node, path)) {
+          return false;
         }
-      },
-      JSXExpressionContainer: (path: NodePath<t.JSXExpressionContainer>) => {
-        const node = path.node;
 
-        if (t.isLiteral(node.expression)) {
-          path.remove();
+        // 删除可以被 stub 的属性
+        node.openingElement.attributes = node.openingElement.attributes.filter(
+          attr => !isStubAttribute(attr)
+        );
+
+        if (isStubElement(node, path)) {
+          helpers.replacedWithStubBlock(node, path);
         }
       },
     },

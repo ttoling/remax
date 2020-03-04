@@ -1,7 +1,8 @@
 import * as t from '@babel/types';
 import { NodePath } from '@babel/traverse';
+import { JSXNode } from './types';
 import {
-  BLOCK,
+  FRAGMENT_BLOCK,
   EXPRESSION_BLOCK,
   LEAF,
   TEMPLATE_ID,
@@ -56,9 +57,8 @@ export function isHostComponentElement(node: t.JSXElement, path: NodePath) {
     const binding = path.scope.getBinding(tag);
 
     if (!binding) {
-      // block 标签也是 Host Component
-      // expression-block 不渲染，但是也算 Host Component
-      if (tag === BLOCK || tag === EXPRESSION_BLOCK) {
+      // fragment-block expression-block 不渲染，但是也算 Host Component
+      if (tag === FRAGMENT_BLOCK || tag === EXPRESSION_BLOCK) {
         return true;
       }
 
@@ -123,11 +123,18 @@ export function isExpressionBlock(path: any) {
 }
 
 /**
- * 判断是否是 <React.Fragment></React.Fragment>
- * @param node JSXElement
+ * 判断是否是 <React.Fragment></React.Fragment> 或 <></>
+ * @param node JSXElement|JSXFragment
  * @param path NodePath
  */
-export function isReactFragment(node: t.JSXElement, path: NodePath) {
+export function isReactFragment(
+  node: t.JSXElement | t.JSXFragment,
+  path: NodePath
+) {
+  if (t.isJSXFragment(node)) {
+    return true;
+  }
+
   /**
    * case:
    * import { Fragment } from 'react';
@@ -249,16 +256,7 @@ export function isPlainTextLeaf(node: t.Node, path: NodePath<t.Node>) {
  * @param {NodePath} path
  * @returns
  */
-export function wrappedByElement(
-  name: string,
-  node:
-    | t.JSXElement
-    | t.JSXFragment
-    | t.JSXExpressionContainer
-    | t.JSXSpreadChild
-    | t.JSXText,
-  path: NodePath
-) {
+export function wrappedByElement(name: string, node: JSXNode, path: NodePath) {
   path.replaceWith(
     t.jsxElement(
       t.jsxOpeningElement(t.jsxIdentifier(name), []),
@@ -273,18 +271,13 @@ export function wrappedByElement(
  * 用 <expression-block> 标签包裹，用于处理无法静态化的标签和表达式
  *
  */
-export function wrappedByExpressionBlock(
-  node:
-    | t.JSXElement
-    | t.JSXFragment
-    | t.JSXExpressionContainer
-    | t.JSXSpreadChild
-    | t.JSXText,
-  path: NodePath
-) {
-  // 如果不是在一个 JSXElement 中，则不处理
+export function wrappedByExpressionBlock(node: JSXNode, path: NodePath) {
+  // 如果不是在一个 JSXElement|JSXFragment 中，则不处理
   // 如：这是一个属性表达式 attr={xxx}
-  if (!t.isJSXElement(path.parentPath.node)) {
+  if (
+    !t.isJSXElement(path.parentPath.node) &&
+    !t.isJSXFragment(path.parentPath.node)
+  ) {
     return;
   }
 
@@ -297,23 +290,15 @@ export function wrappedByExpressionBlock(
 }
 
 /**
- * 将标签替换为 <block>
+ * 将标签替换成 JSXFragment
  *
  * @export
- * @param {(t.JSXElement | t.JSXFragment)} node
+ * @param {(t.JSXElement)} node
  * @param {NodePath} path
  */
-export function replacedWithBlock(
-  node: t.JSXElement | t.JSXFragment,
-  path: NodePath
-) {
+export function replacedWithJSXFragment(node: t.JSXElement, path: NodePath) {
   path.replaceWith(
-    t.jsxElement(
-      t.jsxOpeningElement(t.jsxIdentifier(BLOCK), []),
-      t.jsxClosingElement(t.jsxIdentifier(BLOCK)),
-      node.children,
-      false
-    )
+    t.jsxFragment(t.jsxOpeningFragment(), t.jsxClosingFragment(), node.children)
   );
 }
 
@@ -330,7 +315,7 @@ export function replacedWithStubBlock(node: t.JSXElement, path: NodePath) {
       t.jsxOpeningElement(t.jsxIdentifier(STUB_BLOCK), []),
       t.jsxClosingElement(t.jsxIdentifier(STUB_BLOCK)),
       [],
-      false
+      true
     )
   );
 }
@@ -343,14 +328,7 @@ export function replacedWithStubBlock(node: t.JSXElement, path: NodePath) {
  * @param node
  * @returns
  */
-export function isEmptyText(
-  node:
-    | t.JSXElement
-    | t.JSXText
-    | t.JSXFragment
-    | t.JSXExpressionContainer
-    | t.JSXSpreadChild
-) {
+export function isEmptyText(node: JSXNode) {
   if (!t.isJSXText(node)) {
     return false;
   }

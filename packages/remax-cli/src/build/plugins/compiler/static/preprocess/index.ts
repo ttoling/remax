@@ -1,5 +1,4 @@
 import JSXExpressionContainer from './JSXExpressionContainer';
-import JSXFragment from './JSXFragment';
 import JSXElement from './JSXElement';
 
 /**
@@ -12,7 +11,6 @@ export default function preprocess() {
   return {
     visitor: {
       JSXExpressionContainer,
-      JSXFragment,
       JSXElement,
     },
   };

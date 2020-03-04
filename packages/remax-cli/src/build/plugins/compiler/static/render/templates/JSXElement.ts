@@ -4,23 +4,25 @@ import { kebabCase } from 'lodash';
 import * as helpers from '../../helpers';
 import { createAttributesTemplate } from './attributes';
 import stringPath from './stringPath';
+import { RenderNode } from '../../types';
 
 /**
  *  创建 JSXElement 对应的模板
  *
  * @export
- * @param {t.JSXElement} element
+ * @param {RenderNode} node
  * @param {NodePath} path
  * @param {(Array<string | number>)} dataPath
  * @param {Function} createTemplate
  * @returns
  */
 export default function(
-  element: t.JSXElement,
-  path: NodePath<t.JSXElement>,
+  node: RenderNode<t.JSXElement>,
+  path: NodePath,
   dataPath: Array<string | number>,
   createTemplate: Function
 ) {
+  const { node: element, children } = node;
   const attributes = element.openingElement.attributes;
   // JSXMemberExpression 已经被预处理了，这里只有 JSXIdentifier
   let tag = (element.openingElement.name as t.JSXIdentifier).name;
@@ -45,19 +47,19 @@ export default function(
   }
 
   // 处理子节点
-  let children = '';
+  let childrenTemplate = '';
 
   // case:
   // plain text leaf
   // 单节点文本，子节点直接按 plain-text node 处理
   if (helpers.isPlainTextLeaf(element, path)) {
-    children = `{{ ${stringPath(dataPath)}.children[0].text }}\n`;
+    childrenTemplate = `{{ ${stringPath(dataPath)}.children[0].text }}\n`;
   } else {
     // case:
     // 默认情况，遍历子节点
-    children = element.children
+    childrenTemplate = children
       // 剔除空 JSXText 标签
-      .filter(child => !helpers.isEmptyText(child))
+      .filter(child => !helpers.isEmptyText(child.node))
       .map((child, index) =>
         createTemplate(
           child,
@@ -74,5 +76,5 @@ export default function(
     tag,
     stringPath(dataPath),
     attributes
-  )}>${children}</${tag}>\n`;
+  )}>${childrenTemplate}</${tag}>\n`;
 }

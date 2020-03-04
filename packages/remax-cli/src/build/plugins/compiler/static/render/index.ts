@@ -2,6 +2,7 @@ import * as t from '@babel/types';
 import { NodePath } from '@babel/traverse';
 import { TEMPLATE_ID, ENTRY } from '../constants';
 import { createTemplate, templateInfoSet } from '../render/templates';
+import { JSXNode, RenderNode } from '../types';
 import * as helpers from '../helpers';
 
 /**
@@ -10,7 +11,7 @@ import * as helpers from '../helpers';
  * @param {NodePath} path
  * @returns
  */
-function shouldBeTemplate(path: NodePath<t.JSXElement>) {
+function shouldBeTemplate(path: NodePath<t.JSXElement | t.JSXFragment>) {
   const parent = path.parent;
 
   // case:
@@ -32,7 +33,11 @@ function shouldBeTemplate(path: NodePath<t.JSXElement>) {
  * @param {t.JSXElement} node
  * @returns
  */
-function isEntryPath(node: t.JSXElement) {
+function isEntryPath(node: t.JSXElement | t.JSXFragment) {
+  if (t.isJSXFragment(node)) {
+    return false;
+  }
+
   return !!node.openingElement.attributes.find(
     attr => t.isJSXAttribute(attr) && attr.name.name === ENTRY
   );
@@ -52,7 +57,7 @@ function generateID() {
  * @param {t.JSXOpeningElement} element
  * @returns
  */
-function markTemplateID(element: t.JSXOpeningElement) {
+function markTemplateID(element: t.JSXOpeningElement): string {
   let templateID = helpers.getTemplateID(element);
 
   if (!templateID) {
@@ -63,6 +68,44 @@ function markTemplateID(element: t.JSXOpeningElement) {
   }
 
   return templateID;
+}
+
+/**
+ * 整理 JSXNodes，主要目的是消化 JSXFragment，得到正确的 Node 结构
+ *
+ * @param {JSXNode} node
+ * @returns {RenderNode[]}
+ */
+function sortNodes(node: JSXNode): RenderNode[] {
+  if (t.isJSXFragment(node)) {
+    return node.children.reduce<RenderNode[]>(
+      (prev, current) => prev.concat(sortNodes(current)),
+      []
+    );
+  }
+
+  if (t.isJSXElement(node)) {
+    return [
+      {
+        node,
+        children: node.children.reduce<RenderNode[]>(
+          (prev, current) => prev.concat(sortNodes(current)),
+          []
+        ),
+      },
+    ];
+  }
+
+  // case JSXText
+  // case JSXExpressionContainer
+  // case JSXSpreadChild
+
+  return [
+    {
+      node,
+      children: [],
+    },
+  ];
 }
 
 /**
@@ -82,16 +125,48 @@ export default function render() {
           return;
         }
 
-        const module = state.filename;
-        const templateID = markTemplateID(path.node.openingElement);
-        const template = createTemplate(path.node, path, module, ['node']);
+        const nodes = sortNodes(path.node);
 
-        templateInfoSet.add(
-          templateID,
-          template,
-          module,
-          isEntryPath(path.node)
-        );
+        nodes.forEach((node, index) => {
+          const module = state.filename;
+          const templateID = markTemplateID(path.node.openingElement);
+          const template = createTemplate(node, path, module, ['node']);
+
+          templateInfoSet.add(
+            templateID,
+            template,
+            module,
+            isEntryPath(path.node)
+          );
+        });
+      },
+      JSXFragment: (path: NodePath<t.JSXFragment>, state: any) => {
+        if (!shouldBeTemplate(path)) {
+          return;
+        }
+
+        const nodes = sortNodes(path.node);
+
+        nodes.forEach((node, index) => {
+          // case: JSXExpressionContainer 已经都被包裹在 expression-block 里面，entry 中不会有
+          // case: JSXFragment 已经被 sortNodes 方法处理掉了，不会出现
+          // case: JSXText TODO: 由于 JSXText 无法记录 template id，这里先不处理
+          // case: JSXSpreadChild 未知使用场景
+          if (!t.isJSXElement(node.node)) {
+            return;
+          }
+
+          const module = state.filename;
+          const templateID = markTemplateID(node.node.openingElement);
+          const template = createTemplate(node, path, module, ['node']);
+
+          templateInfoSet.add(
+            templateID,
+            template,
+            module,
+            isEntryPath(path.node)
+          );
+        });
       },
     },
   };

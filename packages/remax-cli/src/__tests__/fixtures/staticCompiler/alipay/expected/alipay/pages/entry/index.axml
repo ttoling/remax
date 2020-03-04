@@ -1,6 +1,4 @@
 <import src="../../base.axml"/>
 
 
-  
-    <template is="TPL_6" data="{{ node: root.children[0] }}" />
-  
+  <template is="TPL_29" data="{{ node: root.children[0] }}" />

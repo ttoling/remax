@@ -16,122 +16,193 @@
 </template>
 
 <template name="TPL_2">
-  <block ><block >{{'Fragment'}}</block>
-
-<block >{{'React.Fragment'}}</block>
-
-<block ><template is="TPL_DEFAULT" data="{{root: node.children[2]}}" />
-</block>
-
-<text >{{'Remax.Text'}}</text>
-
-<block ><template is="TPL_DEFAULT" data="{{root: node.children[4]}}" />
-</block>
-
-<block ><template is="TPL_DEFAULT" data="{{root: node.children[5]}}" />
-</block>
-
-<view class="className">{{'Count: '}}
-<block ><block a:if="{{node.children[6].children[1].children}}">
-  <block a:for="{{node.children[6].children[1].children || []}}" key="{{item.id}}">
-    <template a:if="{{item.props._tid > 0}}" is="{{'TPL_' + item.props._tid}}" data="{{ node: item }}" />
-    <template a:else is="{{ 'TPL_' + item.type }}" data="{{ node: item }}" />
-  </block>
-</block>
-<template a:elif="{{node.children[6].children[1].props._tid > 0}}" is="{{'TPL_' + node.children[6].children[1].props._tid}}" data="{{ node: node.children[6].children[1] }}" />
-<template a:else is="{{ 'TPL_' + node.children[6].children[1].type }}" data="{{ node: node.children[6].children[1] }}" />
-</block>
-</view>
-
-<view id="{{node.children[7].props['id']}}"
-  class="class">{{'view'}}</view>
-
-<view >{{'custom view'}}</view>
-
-<block ><block a:if="{{node.children[9].children}}">
-  <block a:for="{{node.children[9].children || []}}" key="{{item.id}}">
-    <template a:if="{{item.props._tid > 0}}" is="{{'TPL_' + item.props._tid}}" data="{{ node: item }}" />
-    <template a:else is="{{ 'TPL_' + item.type }}" data="{{ node: item }}" />
-  </block>
-</block>
-<template a:elif="{{node.children[9].props._tid > 0}}" is="{{'TPL_' + node.children[9].props._tid}}" data="{{ node: node.children[9] }}" />
-<template a:else is="{{ 'TPL_' + node.children[9].type }}" data="{{ node: node.children[9] }}" />
-</block>
-
-<block ><block a:if="{{node.children[10].children}}">
-  <block a:for="{{node.children[10].children || []}}" key="{{item.id}}">
-    <template a:if="{{item.props._tid > 0}}" is="{{'TPL_' + item.props._tid}}" data="{{ node: item }}" />
-    <template a:else is="{{ 'TPL_' + item.type }}" data="{{ node: item }}" />
-  </block>
-</block>
-<template a:elif="{{node.children[10].props._tid > 0}}" is="{{'TPL_' + node.children[10].props._tid}}" data="{{ node: node.children[10] }}" />
-<template a:else is="{{ 'TPL_' + node.children[10].type }}" data="{{ node: node.children[10] }}" />
-</block>
-
-<view id="{{node.children[11].props['id']}}"
-  disable-scroll="{{node.children[11].props['disable-scroll']}}"
-  hover-class="{{node.children[11].props['hover-class']}}"
-  hover-class="{{node.children[11].props['hover-class']}}"
-  hover-start-time="{{node.children[11].props['hover-start-time']}}"
-  hover-stay-time="{{node.children[11].props['hover-stay-time']}}"
-  hidden="{{node.children[11].props['hidden']}}"
-  class="{{node.children[11].props['class']}}"
-  style="{{node.children[11].props['style']}}"
-  animation="{{node.children[11].props['animation']}}"
-  hover-stop-propagation="{{node.children[11].props['hover-stop-propagation']}}"
-  onTap="{{node.children[11].props['onTap']}}"
-  onTap="{{node.children[11].props['onTap']}}"
-  onTouchStart="{{node.children[11].props['onTouchStart']}}"
-  onTouchMove="{{node.children[11].props['onTouchMove']}}"
-  onTouchEnd="{{node.children[11].props['onTouchEnd']}}"
-  onTouchCancel="{{node.children[11].props['onTouchCancel']}}"
-  onLongTap="{{node.children[11].props['onLongTap']}}"
-  onLongTap="{{node.children[11].props['onLongTap']}}"
-  onTransitionEnd="{{node.children[11].props['onTransitionEnd']}}"
-  onAnimationIteration="{{node.children[11].props['onAnimationIteration']}}"
-  onAnimationStart="{{node.children[11].props['onAnimationStart']}}"
-  onAnimationEnd="{{node.children[11].props['onAnimationEnd']}}"
-  onAppear="{{node.children[11].props['onAppear']}}"
-  onDisappear="{{node.children[11].props['onDisappear']}}"
-  onFirstAppear="{{node.children[11].props['onFirstAppear']}}">{{'Spread Attributes View'}}</view>
-
-<text >{{'long long long long long long long long long long long long text long long long long long long long long long long long long text '}}</text>
-
-<block ><template is="TPL_DEFAULT" data="{{root: node.children[13]}}" />
-</block>
-
-<block >{{'Literal Expression'}}</block>
-
-<block ><template is="TPL_DEFAULT" data="{{root: node.children[15]}}" />
-</block>
-
-<block ><template is="TPL_DEFAULT" data="{{root: node.children[16]}}" />
-</block>
-
-<block ><block a:if="{{node.children[17].children}}">
-  <block a:for="{{node.children[17].children || []}}" key="{{item.id}}">
-    <template a:if="{{item.props._tid > 0}}" is="{{'TPL_' + item.props._tid}}" data="{{ node: item }}" />
-    <template a:else is="{{ 'TPL_' + item.type }}" data="{{ node: item }}" />
-  </block>
-</block>
-<template a:elif="{{node.children[17].props._tid > 0}}" is="{{'TPL_' + node.children[17].props._tid}}" data="{{ node: node.children[17] }}" />
-<template a:else is="{{ 'TPL_' + node.children[17].type }}" data="{{ node: node.children[17] }}" />
-</block>
-
-<text >{{ node.children[18].children[0].text }}
-</text>
-
-<view ns:attr="1"></view>
-</block>
+  <block >{{'expression entry'}}</block>
 
 </template>
 
 <template name="TPL_3">
-  <view >{{'create element children 1'}}</view>
+  <text >{{'Fragment Text 1'}}</text>
 
 </template>
 
 <template name="TPL_4">
+  <text >{{'Fragment Text 2'}}</text>
+
+</template>
+
+<template name="TPL_5">
+  <text >{{'Fragment Text 3'}}</text>
+
+</template>
+
+<template name="TPL_6">
+  <text >{{'Fragment Text 4'}}</text>
+
+</template>
+
+<template name="TPL_7">
+  <block ><template is="TPL_DEFAULT" data="{{root: node}}" />
+</block>
+
+</template>
+
+<template name="TPL_8">
+  <text >{{'Remax.Text'}}</text>
+
+</template>
+
+<template name="TPL_9">
+  <block ><template is="TPL_DEFAULT" data="{{root: node}}" />
+</block>
+
+</template>
+
+<template name="TPL_10">
+  <block ><template is="TPL_DEFAULT" data="{{root: node}}" />
+</block>
+
+</template>
+
+<template name="TPL_11">
+  <view class="className">{{'Count: '}}
+<block ><block a:if="{{node.children[1].children}}">
+  <block a:for="{{node.children[1].children || []}}" key="{{item.id}}">
+    <template a:if="{{item.props._tid > 0}}" is="{{'TPL_' + item.props._tid}}" data="{{ node: item }}" />
+    <template a:else is="{{ 'TPL_' + item.type }}" data="{{ node: item }}" />
+  </block>
+</block>
+<template a:elif="{{node.children[1].props._tid > 0}}" is="{{'TPL_' + node.children[1].props._tid}}" data="{{ node: node.children[1] }}" />
+<template a:else is="{{ 'TPL_' + node.children[1].type }}" data="{{ node: node.children[1] }}" />
+</block>
+</view>
+
+</template>
+
+<template name="TPL_12">
+  <view id="{{node.props['id']}}"
+  class="class">{{'view'}}</view>
+
+</template>
+
+<template name="TPL_13">
+  <view >{{'custom view'}}</view>
+
+</template>
+
+<template name="TPL_14">
+  <block ><block a:if="{{node.children}}">
+  <block a:for="{{node.children || []}}" key="{{item.id}}">
+    <template a:if="{{item.props._tid > 0}}" is="{{'TPL_' + item.props._tid}}" data="{{ node: item }}" />
+    <template a:else is="{{ 'TPL_' + item.type }}" data="{{ node: item }}" />
+  </block>
+</block>
+<template a:elif="{{node.props._tid > 0}}" is="{{'TPL_' + node.props._tid}}" data="{{ node: node }}" />
+<template a:else is="{{ 'TPL_' + node.type }}" data="{{ node: node }}" />
+</block>
+
+</template>
+
+<template name="TPL_15">
+  <block ><block a:if="{{node.children}}">
+  <block a:for="{{node.children || []}}" key="{{item.id}}">
+    <template a:if="{{item.props._tid > 0}}" is="{{'TPL_' + item.props._tid}}" data="{{ node: item }}" />
+    <template a:else is="{{ 'TPL_' + item.type }}" data="{{ node: item }}" />
+  </block>
+</block>
+<template a:elif="{{node.props._tid > 0}}" is="{{'TPL_' + node.props._tid}}" data="{{ node: node }}" />
+<template a:else is="{{ 'TPL_' + node.type }}" data="{{ node: node }}" />
+</block>
+
+</template>
+
+<template name="TPL_16">
+  <view id="{{node.props['id']}}"
+  disable-scroll="{{node.props['disable-scroll']}}"
+  hover-class="{{node.props['hover-class']}}"
+  hover-class="{{node.props['hover-class']}}"
+  hover-start-time="{{node.props['hover-start-time']}}"
+  hover-stay-time="{{node.props['hover-stay-time']}}"
+  hidden="{{node.props['hidden']}}"
+  class="{{node.props['class']}}"
+  style="{{node.props['style']}}"
+  animation="{{node.props['animation']}}"
+  hover-stop-propagation="{{node.props['hover-stop-propagation']}}"
+  onTap="{{node.props['onTap']}}"
+  onTap="{{node.props['onTap']}}"
+  onTouchStart="{{node.props['onTouchStart']}}"
+  onTouchMove="{{node.props['onTouchMove']}}"
+  onTouchEnd="{{node.props['onTouchEnd']}}"
+  onTouchCancel="{{node.props['onTouchCancel']}}"
+  onLongTap="{{node.props['onLongTap']}}"
+  onLongTap="{{node.props['onLongTap']}}"
+  onTransitionEnd="{{node.props['onTransitionEnd']}}"
+  onAnimationIteration="{{node.props['onAnimationIteration']}}"
+  onAnimationStart="{{node.props['onAnimationStart']}}"
+  onAnimationEnd="{{node.props['onAnimationEnd']}}"
+  onAppear="{{node.props['onAppear']}}"
+  onDisappear="{{node.props['onDisappear']}}"
+  onFirstAppear="{{node.props['onFirstAppear']}}">{{'Spread Attributes View'}}</view>
+
+</template>
+
+<template name="TPL_17">
+  <text >{{'long long long long long long long long long long long long text long long long long long long long long long long long long text '}}</text>
+
+</template>
+
+<template name="TPL_18">
+  <block ><template is="TPL_DEFAULT" data="{{root: node}}" />
+</block>
+
+</template>
+
+<template name="TPL_19">
+  <block >{{'Literal Expression'}}</block>
+
+</template>
+
+<template name="TPL_20">
+  <block ><template is="TPL_DEFAULT" data="{{root: node}}" />
+</block>
+
+</template>
+
+<template name="TPL_21">
+  <block ><template is="TPL_DEFAULT" data="{{root: node}}" />
+</block>
+
+</template>
+
+<template name="TPL_22">
+  <block ><block a:if="{{node.children}}">
+  <block a:for="{{node.children || []}}" key="{{item.id}}">
+    <template a:if="{{item.props._tid > 0}}" is="{{'TPL_' + item.props._tid}}" data="{{ node: item }}" />
+    <template a:else is="{{ 'TPL_' + item.type }}" data="{{ node: item }}" />
+  </block>
+</block>
+<template a:elif="{{node.props._tid > 0}}" is="{{'TPL_' + node.props._tid}}" data="{{ node: node }}" />
+<template a:else is="{{ 'TPL_' + node.type }}" data="{{ node: node }}" />
+</block>
+
+</template>
+
+<template name="TPL_23">
+  <text >{{ node.children[0].text }}
+</text>
+
+</template>
+
+<template name="TPL_24">
+  <view ns:attr="1"></view>
+
+</template>
+
+<template name="TPL_25">
+  <view >{{'create element children 1'}}</view>
+
+</template>
+
+<template name="TPL_26">
   <view >{{'array map: '}}
 <block ><block a:if="{{node.children[1].children}}">
   <block a:for="{{node.children[1].children || []}}" key="{{item.id}}">
@@ -146,18 +217,173 @@
 
 </template>
 
-<template name="TPL_5">
+<template name="TPL_27">
   <view >{{'Conditional View'}}</view>
 
 </template>
 
-<template name="TPL_6">
-  <view ><view >{{'entry'}}</view>
+<template name="TPL_28">
+  <view ><text >{{'react component'}}</text>
+
+<block ><block a:if="{{node.children[1].children}}">
+  <block a:for="{{node.children[1].children || []}}" key="{{item.id}}">
+    <template a:if="{{item.props._tid > 0}}" is="{{'TPL_' + item.props._tid}}" data="{{ node: item }}" />
+    <template a:else is="{{ 'TPL_' + item.type }}" data="{{ node: item }}" />
+  </block>
+</block>
+<template a:elif="{{node.children[1].props._tid > 0}}" is="{{'TPL_' + node.children[1].props._tid}}" data="{{ node: node.children[1] }}" />
+<template a:else is="{{ 'TPL_' + node.children[1].type }}" data="{{ node: node.children[1] }}" />
+</block>
 </view>
 
 </template>
 
-<template name="TPL_7">
+<template name="TPL_29">
+  <view >{{'JSXText entry'}}
+<block >{{'expression entry'}}</block>
+
+<text >{{'Fragment Text 1'}}</text>
+
+<text >{{'Fragment Text 2'}}</text>
+
+<text >{{'Fragment Text 3'}}</text>
+
+<text >{{'Fragment Text 4'}}</text>
+
+{{'Fragment'}}
+{{'React.Fragment'}}
+<block ><template is="TPL_DEFAULT" data="{{root: node.children[8]}}" />
+</block>
+
+<text >{{'Remax.Text'}}</text>
+
+<block ><template is="TPL_DEFAULT" data="{{root: node.children[10]}}" />
+</block>
+
+<block ><template is="TPL_DEFAULT" data="{{root: node.children[11]}}" />
+</block>
+
+<view class="className">{{'Count: '}}
+<block ><block a:if="{{node.children[12].children[1].children}}">
+  <block a:for="{{node.children[12].children[1].children || []}}" key="{{item.id}}">
+    <template a:if="{{item.props._tid > 0}}" is="{{'TPL_' + item.props._tid}}" data="{{ node: item }}" />
+    <template a:else is="{{ 'TPL_' + item.type }}" data="{{ node: item }}" />
+  </block>
+</block>
+<template a:elif="{{node.children[12].children[1].props._tid > 0}}" is="{{'TPL_' + node.children[12].children[1].props._tid}}" data="{{ node: node.children[12].children[1] }}" />
+<template a:else is="{{ 'TPL_' + node.children[12].children[1].type }}" data="{{ node: node.children[12].children[1] }}" />
+</block>
+</view>
+
+<view id="{{node.children[13].props['id']}}"
+  class="class">{{'view'}}</view>
+
+<view >{{'custom view'}}</view>
+
+<block ><block a:if="{{node.children[15].children}}">
+  <block a:for="{{node.children[15].children || []}}" key="{{item.id}}">
+    <template a:if="{{item.props._tid > 0}}" is="{{'TPL_' + item.props._tid}}" data="{{ node: item }}" />
+    <template a:else is="{{ 'TPL_' + item.type }}" data="{{ node: item }}" />
+  </block>
+</block>
+<template a:elif="{{node.children[15].props._tid > 0}}" is="{{'TPL_' + node.children[15].props._tid}}" data="{{ node: node.children[15] }}" />
+<template a:else is="{{ 'TPL_' + node.children[15].type }}" data="{{ node: node.children[15] }}" />
+</block>
+
+<block ><block a:if="{{node.children[16].children}}">
+  <block a:for="{{node.children[16].children || []}}" key="{{item.id}}">
+    <template a:if="{{item.props._tid > 0}}" is="{{'TPL_' + item.props._tid}}" data="{{ node: item }}" />
+    <template a:else is="{{ 'TPL_' + item.type }}" data="{{ node: item }}" />
+  </block>
+</block>
+<template a:elif="{{node.children[16].props._tid > 0}}" is="{{'TPL_' + node.children[16].props._tid}}" data="{{ node: node.children[16] }}" />
+<template a:else is="{{ 'TPL_' + node.children[16].type }}" data="{{ node: node.children[16] }}" />
+</block>
+
+<view id="{{node.children[17].props['id']}}"
+  disable-scroll="{{node.children[17].props['disable-scroll']}}"
+  hover-class="{{node.children[17].props['hover-class']}}"
+  hover-class="{{node.children[17].props['hover-class']}}"
+  hover-start-time="{{node.children[17].props['hover-start-time']}}"
+  hover-stay-time="{{node.children[17].props['hover-stay-time']}}"
+  hidden="{{node.children[17].props['hidden']}}"
+  class="{{node.children[17].props['class']}}"
+  style="{{node.children[17].props['style']}}"
+  animation="{{node.children[17].props['animation']}}"
+  hover-stop-propagation="{{node.children[17].props['hover-stop-propagation']}}"
+  onTap="{{node.children[17].props['onTap']}}"
+  onTap="{{node.children[17].props['onTap']}}"
+  onTouchStart="{{node.children[17].props['onTouchStart']}}"
+  onTouchMove="{{node.children[17].props['onTouchMove']}}"
+  onTouchEnd="{{node.children[17].props['onTouchEnd']}}"
+  onTouchCancel="{{node.children[17].props['onTouchCancel']}}"
+  onLongTap="{{node.children[17].props['onLongTap']}}"
+  onLongTap="{{node.children[17].props['onLongTap']}}"
+  onTransitionEnd="{{node.children[17].props['onTransitionEnd']}}"
+  onAnimationIteration="{{node.children[17].props['onAnimationIteration']}}"
+  onAnimationStart="{{node.children[17].props['onAnimationStart']}}"
+  onAnimationEnd="{{node.children[17].props['onAnimationEnd']}}"
+  onAppear="{{node.children[17].props['onAppear']}}"
+  onDisappear="{{node.children[17].props['onDisappear']}}"
+  onFirstAppear="{{node.children[17].props['onFirstAppear']}}">{{'Spread Attributes View'}}</view>
+
+<text >{{'long long long long long long long long long long long long text long long long long long long long long long long long long text '}}</text>
+
+<block ><template is="TPL_DEFAULT" data="{{root: node.children[19]}}" />
+</block>
+
+<block >{{'Literal Expression'}}</block>
+
+<block ><template is="TPL_DEFAULT" data="{{root: node.children[21]}}" />
+</block>
+
+<block ><template is="TPL_DEFAULT" data="{{root: node.children[22]}}" />
+</block>
+
+<block ><block a:if="{{node.children[23].children}}">
+  <block a:for="{{node.children[23].children || []}}" key="{{item.id}}">
+    <template a:if="{{item.props._tid > 0}}" is="{{'TPL_' + item.props._tid}}" data="{{ node: item }}" />
+    <template a:else is="{{ 'TPL_' + item.type }}" data="{{ node: item }}" />
+  </block>
+</block>
+<template a:elif="{{node.children[23].props._tid > 0}}" is="{{'TPL_' + node.children[23].props._tid}}" data="{{ node: node.children[23] }}" />
+<template a:else is="{{ 'TPL_' + node.children[23].type }}" data="{{ node: node.children[23] }}" />
+</block>
+
+<text >{{ node.children[24].children[0].text }}
+</text>
+
+<view ns:attr="1"></view>
+</view>
+
+</template>
+
+<template name="TPL_30">
+  <view >{{'create element children 1'}}</view>
+
+</template>
+
+<template name="TPL_31">
+  <view >{{'array map: '}}
+<block ><block a:if="{{node.children[1].children}}">
+  <block a:for="{{node.children[1].children || []}}" key="{{item.id}}">
+    <template a:if="{{item.props._tid > 0}}" is="{{'TPL_' + item.props._tid}}" data="{{ node: item }}" />
+    <template a:else is="{{ 'TPL_' + item.type }}" data="{{ node: item }}" />
+  </block>
+</block>
+<template a:elif="{{node.children[1].props._tid > 0}}" is="{{'TPL_' + node.children[1].props._tid}}" data="{{ node: node.children[1] }}" />
+<template a:else is="{{ 'TPL_' + node.children[1].type }}" data="{{ node: node.children[1] }}" />
+</block>
+</view>
+
+</template>
+
+<template name="TPL_32">
+  <view >{{'Conditional View'}}</view>
+
+</template>
+
+<template name="TPL_33">
   <view >{{'remax window'}}</view>
 
 </template>
@@ -219,6 +445,7 @@
   
 <template name="TPL_text">
   <text 
+    _tid="{{node.props['_tid']}}" 
     class="{{node.props['class']}}" 
     decode="{{node.props['decode']}}" 
     id="{{node.props['id']}}" 
