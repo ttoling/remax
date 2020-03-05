@@ -148,7 +148,7 @@ export default function render() {
         const nodes = sortNodes(path.node);
 
         nodes.forEach((node, index) => {
-          // case: JSXExpressionContainer 已经都被包裹在 expression-block 里面，entry 中不会有
+          // case: JSXExpressionContainer 已经都被包裹在 block 里面，entry 中不会有
           // case: JSXFragment 已经被 sortNodes 方法处理掉了，不会出现
           // case: JSXText TODO: 由于 JSXText 无法记录 template id，这里先不处理
           // case: JSXSpreadChild 未知使用场景

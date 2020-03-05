@@ -24,7 +24,7 @@ export default function(path: NodePath<t.JSXExpressionContainer>) {
     return;
   }
 
-  // case expression-block
-  // 默认都按照 expression-block 处理，对表达式的节点做遍历渲染
+  // case block
+  // 默认都按照 block 处理，对表达式的节点做遍历渲染
   helpers.wrappedByExpressionBlock(node, path);
 }

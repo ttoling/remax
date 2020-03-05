@@ -4,7 +4,7 @@ import * as helpers from '../helpers';
 
 /**
  * 1. 将 <React.Fragment> 转换成 <block>
- * 2. 将不能静态化的标签（非 Host Component）包裹在 <expression-block> 里面，使其可数，可动态处理
+ * 2. 将不能静态化的标签（非 Host Component）包裹在 <block> 里面，使其可数，可动态处理
  *
  * @export
  * @param {NodePath} path

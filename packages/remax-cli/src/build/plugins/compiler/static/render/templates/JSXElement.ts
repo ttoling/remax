@@ -5,6 +5,7 @@ import * as helpers from '../../helpers';
 import { createAttributesTemplate } from './attributes';
 import stringPath from './stringPath';
 import { RenderNode } from '../../types';
+import { EXPRESSION_BLOCK } from '../../constants';
 
 /**
  *  创建 JSXElement 对应的模板
@@ -39,12 +40,7 @@ export default function(
   // 获取真正的组件名称
   tag = kebabCase(helpers.getHostComponentName(element, path) || tag);
 
-  const isExpressionBlock = tag === 'expression-block';
-
-  // expression-block 渲染成 block 标签
-  if (isExpressionBlock) {
-    tag = 'block';
-  }
+  const isExpressionBlock = tag === EXPRESSION_BLOCK;
 
   // 处理子节点
   let childrenTemplate = '';

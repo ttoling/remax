@@ -1,13 +1,7 @@
 import * as t from '@babel/types';
 import { NodePath } from '@babel/traverse';
 import { JSXNode } from './types';
-import {
-  FRAGMENT_BLOCK,
-  EXPRESSION_BLOCK,
-  LEAF,
-  TEMPLATE_ID,
-  STUB_BLOCK,
-} from './constants';
+import { EXPRESSION_BLOCK, LEAF, TEMPLATE_ID, STUB_BLOCK } from './constants';
 
 /**
  * 从 JSXElement 中取出 Host Component 的名称
@@ -57,8 +51,8 @@ export function isHostComponentElement(node: t.JSXElement, path: NodePath) {
     const binding = path.scope.getBinding(tag);
 
     if (!binding) {
-      // fragment-block expression-block 不渲染，但是也算 Host Component
-      if (tag === FRAGMENT_BLOCK || tag === EXPRESSION_BLOCK) {
+      // EXPRESSION_BLOCK 是 'block' 标签，也是 host component
+      if (tag === EXPRESSION_BLOCK) {
         return true;
       }
 
@@ -268,7 +262,7 @@ export function wrappedByElement(name: string, node: JSXNode, path: NodePath) {
 }
 
 /**
- * 用 <expression-block> 标签包裹，用于处理无法静态化的标签和表达式
+ * 用 <block> 标签包裹，用于处理无法静态化的标签和表达式
  *
  */
 export function wrappedByExpressionBlock(node: JSXNode, path: NodePath) {
@@ -281,7 +275,7 @@ export function wrappedByExpressionBlock(node: JSXNode, path: NodePath) {
     return;
   }
 
-  // 已经被 <expression-block> 包裹
+  // 已经被 <block> 包裹
   if (isExpressionBlock(path.parentPath)) {
     return;
   }
