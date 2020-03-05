@@ -3,10 +3,10 @@ import * as helpers from '../../helpers';
 import { NodePath } from '@babel/traverse';
 import JSXElement from './JSXElement';
 import JSXExpressionContainer from './JSXExpressionContainer';
-import TemplateInfoSet from './TemplateInfoSet';
+import TemplateInfoMap from './TemplateInfoMap';
 import { RenderNode } from '../../types';
 
-export const templateInfoSet = new TemplateInfoSet();
+export const templateInfoMap = new TemplateInfoMap();
 
 /**
  * 创建单个原生模板

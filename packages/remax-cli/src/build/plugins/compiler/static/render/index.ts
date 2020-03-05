@@ -1,20 +1,25 @@
 import * as t from '@babel/types';
 import { NodePath } from '@babel/traverse';
 import { TEMPLATE_ID, ENTRY } from '../constants';
-import { createTemplate, templateInfoSet } from '../render/templates';
+import { createTemplate, templateInfoMap } from '../render/templates';
 import { JSXNode, RenderNode } from '../types';
 import * as helpers from '../helpers';
 
 /**
  * 判断 JSX 元素是否处于一段 JSX 片段的顶部
  * 用于标记 template id
- *
- * @param {NodePath} path
- * @returns
  */
 function isRootPath(path: NodePath<t.JSXElement | t.JSXFragment>) {
-  // const { parent, parentPath } = path;
-  const { parent } = path;
+  const { parent, parentPath, node } = path;
+
+  // 元素自身是非 host component 或者是 block，不能识别为 Root
+  if (
+    t.isJSXElement(node) &&
+    ((node.openingElement.name as t.JSXIdentifier).name === 'block' ||
+      !helpers.isHostComponentElement(node, path))
+  ) {
+    return false;
+  }
 
   // case:
   // 记录根节点
@@ -23,11 +28,14 @@ function isRootPath(path: NodePath<t.JSXElement | t.JSXFragment>) {
     return true;
   }
 
-  // TODO: parent 本身是一个非 host 组件(React 组件, 原生组件或者无法识别的组件等)，也应该记录下来，
-  // 可以将它的 children 静态化成模板
-  // if (!helpers.isHostComponentElement(parent, parentPath)) {
-  //   return true;
-  // }
+  // case:
+  // parent 本身是一个非 host 组件(React 组件, 原生组件或者无法识别的组件等)
+  if (
+    t.isJSXElement(parent) &&
+    !helpers.isHostComponentElement(parent, parentPath)
+  ) {
+    return true;
+  }
 
   return false;
 }
@@ -141,9 +149,17 @@ function renderTemplates(
 
     const module = state.filename;
     const templateID = markTemplateID(node.node.openingElement);
-    const template = createTemplate(node, path, module, ['node']);
 
-    templateInfoSet.add(templateID, template, module, isEntry(path.node));
+    if (templateInfoMap.has(templateID)) {
+      return;
+    }
+
+    templateInfoMap.set(
+      templateID,
+      createTemplate(node, path, module, ['node']),
+      module,
+      isEntry(path.node)
+    );
   });
 }
 
@@ -156,7 +172,7 @@ function renderTemplates(
 export default function render() {
   return {
     pre(state: any) {
-      templateInfoSet.remove(state.opts.filename);
+      templateInfoMap.remove(state.opts.filename);
     },
     visitor: {
       JSXElement: renderTemplates,

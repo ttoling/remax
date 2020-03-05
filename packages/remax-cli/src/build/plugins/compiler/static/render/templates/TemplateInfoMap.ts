@@ -9,12 +9,17 @@ export interface TemplateInfo {
  * 存储 template 信息
  *
  */
-export default class TemplateInfoSet {
+export default class TemplateInfoMap {
   public values() {
     return this.templates;
   }
 
-  public add(id: string, template: string, module: string, isEntry?: boolean) {
+  public has(id: string) {
+    return !!this.templates.find(t => t.id === id);
+  }
+
+  public set(id: string, template: string, module: string, isEntry?: boolean) {
+    this.templates = this.templates.filter(t => t.id !== id);
     this.templates.push({ template, module, id, isEntry });
   }
 

@@ -3,7 +3,7 @@ import { RemaxOptions, Meta } from 'remax-types';
 import ejs from 'ejs';
 import winPath from '../../../../../winPath';
 import { TEMPLATE_ID } from '../constants';
-import { templateInfoSet } from './templates';
+import { templateInfoMap } from './templates';
 
 export async function renderPage(
   pageFile: string,
@@ -17,7 +17,7 @@ export async function renderPage(
     path.extname(pageFile)
   )}${meta.template.extension}`;
 
-  const templates = templateInfoSet.values();
+  const templates = templateInfoMap.values();
   const entries = templates.filter(
     (template: any) =>
       template.isEntry &&
@@ -54,7 +54,7 @@ export async function renderCommon(
   createRenderOptions: Function
 ) {
   const renderOptions = createRenderOptions(options);
-  const templates = templateInfoSet.values();
+  const templates = templateInfoMap.values();
 
   renderOptions.templates = templates;
   renderOptions.TEMPLATE_ID = TEMPLATE_ID;

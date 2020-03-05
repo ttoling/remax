@@ -18,12 +18,18 @@ const DDD = createHostComponent('ddd', []);
 
 function ReactComp({ children }) {
   return (
-    <View>
-      <Text>react component</Text>
-      {React.Children.map(children, (child, index) =>
-        React.cloneElement(child, { id: 'reactComp' + index })
-      )}
-    </View>
+    <>
+      <View>
+        <Text>react component</Text>
+        <>
+          <Text>Text inside Fragment</Text>
+        </>
+        {<View>View inside Expression</View>}
+        {React.Children.map(children, (child, index) =>
+          React.cloneElement(child, { id: 'reactComp' + index })
+        )}
+      </View>
+    </>
   );
 }
 
@@ -77,10 +83,7 @@ export default function Index() {
       <Deep.Object.View>Deep Object View</Deep.Object.View>
       <RenameView>Rename View</RenameView>
       {show && <View>Conditional View</View>}
-      <Text leaf>
-        {showPlainText && plainText} {showPlainText && '第二段'}{' '}
-        {showPlainText && plainText}
-      </Text>
+      <Text leaf>{showPlainText && plainText}</Text>
       <View ns:attr="1" />
     </View>
   );

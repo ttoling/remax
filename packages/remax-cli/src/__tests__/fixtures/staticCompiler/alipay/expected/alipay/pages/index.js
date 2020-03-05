@@ -59,13 +59,15 @@ var DDD = createHostComponent.default('ddd');
 
 function ReactComp(_ref) {
   var children = _ref.children;
-  return React.createElement(index$2.default, {
+  return React.createElement(React.Fragment, null, React.createElement(index$2.default, {
     _tid: "1"
-  }, React.createElement("stub-block", null), React.createElement("block", null, React.Children.map(children, function (child, index) {
+  }, React.createElement("stub-block", null), React.createElement(React.Fragment, null, React.createElement("stub-block", null)), React.createElement("block", null, React.createElement(index$2.default, {
+    _tid: "2"
+  }, "View inside Expression")), React.createElement("block", null, React.Children.map(children, function (child, index) {
     return React.cloneElement(child, {
       id: 'reactComp' + index
     });
-  })));
+  }))));
 }
 
 function _ref2() {
@@ -86,66 +88,68 @@ function _ref2() {
       showPlainText = _React$useState6[0];
 
   var plainText = 'plain-text-leaf';
-  return React.createElement(React.Fragment, null, "JSXText entry", React.createElement("block", {
-    _tid: "2"
-  }, 'expression entry'), React.createElement(React.Fragment, null, React.createElement(index$9.default, {
+  return React.createElement(React.Fragment, null, React.createElement("block", {
     _tid: "3"
-  }, "Fragment Text 1"), React.createElement(index$9.default, {
+  }, 'expression entry'), React.createElement(React.Fragment, null, React.createElement(index$9.default, {
     _tid: "4"
-  }, "Fragment Text 2"), React.createElement(React.Fragment, null, React.createElement(index$9.default, {
+  }, "Fragment Text 1"), React.createElement(index$9.default, {
     _tid: "5"
-  }, "Fragment Text 3"), React.createElement(index$9.default, {
+  }, "Fragment Text 2"), React.createElement(React.Fragment, null, React.createElement(index$9.default, {
     _tid: "6"
-  }, "Fragment Text 4"))), React.createElement(React.Fragment, null, "Fragment"), React.createElement(React.Fragment, null, "React.Fragment"), React.createElement("block", {
+  }, "Fragment Text 3"), React.createElement(index$9.default, {
     _tid: "7"
-  }, React.createElement(DDD, null)), React.createElement(index$9.default, {
+  }, "Fragment Text 4"))), React.createElement(React.Fragment, null, "Fragment"), React.createElement(React.Fragment, null, "React.Fragment"), React.createElement("block", {
     _tid: "8"
-  }, "Remax.Text"), React.createElement("block", {
+  }, React.createElement(DDD, null)), React.createElement(index$9.default, {
     _tid: "9"
-  }, React.createElement(NativeComponent, null)), React.createElement("block", {
+  }, "Remax.Text"), React.createElement("block", {
     _tid: "10"
-  }, React.createElement(ReactComp, null, React.createElement("stub-block", null), React.createElement("block", null, 'React Component Second Child'))), React.createElement(index$2.default, {
+  }, React.createElement(NativeComponent, null)), React.createElement("block", {
     _tid: "11"
+  }, React.createElement(ReactComp, null, React.createElement(index$2.default, {
+    _tid: "26"
+  }, "React Component First Child"), React.createElement("block", null, 'React Component Second Child'))), React.createElement(index$2.default, {
+    _tid: "12"
   }, "Count: ", React.createElement("block", null, count)), React.createElement(index$2.default, {
     id: count,
-    _tid: "12"
-  }, "view"), React.createElement(index$2.default, {
     _tid: "13"
-  }, "custom view"), React.createElement("block", {
+  }, "view"), React.createElement(index$2.default, {
     _tid: "14"
+  }, "custom view"), React.createElement("block", {
+    _tid: "15"
   }, React.createElement('view', {
     id: 'view'
   }, [React.createElement(index$2.default, {
-    _tid: "25"
+    _tid: "27"
   }, "create element children 1"), React.createElement('view', {
     key: '2'
   })])), React.createElement("block", {
-    _tid: "15"
+    _tid: "16"
   }, [1, 2, 3].map(function (item) {
     return React.createElement(index$2.default, {
       key: item,
-      _tid: "26"
+      _tid: "28"
     }, "array map: ", React.createElement("block", null, item));
   })), React.createElement(index$2.default, _rollupPluginBabelHelpers.extends({}, props, {
-    _tid: "16"
-  }), "Spread Attributes View"), React.createElement(index$9.default, {
     _tid: "17"
-  }, "long long long long long long long long long long long long text long long long long long long long long long long long long text"), React.createElement("block", {
+  }), "Spread Attributes View"), React.createElement(index$9.default, {
     _tid: "18"
-  }, React.createElement(index$z.default, null)), React.createElement("block", {
+  }, "long long long long long long long long long long long long text long long long long long long long long long long long long text"), React.createElement("block", {
     _tid: "19"
-  }, 'Literal Expression'), React.createElement("block", {
+  }, React.createElement(index$z.default, null)), React.createElement("block", {
     _tid: "20"
-  }, React.createElement(Deep.Object.View, null, "Deep Object View")), React.createElement("block", {
+  }, 'Literal Expression'), React.createElement("block", {
     _tid: "21"
-  }, React.createElement(RenameView, null, "Rename View")), React.createElement("block", {
+  }, React.createElement(Deep.Object.View, null, "Deep Object View")), React.createElement("block", {
     _tid: "22"
-  }, show && React.createElement(index$2.default, {
-    _tid: "27"
-  }, "Conditional View")), React.createElement(index$9.default, {
+  }, React.createElement(RenameView, null, "Rename View")), React.createElement("block", {
     _tid: "23"
-  }, showPlainText && plainText, " ", showPlainText && '第二段', ' ', showPlainText && plainText), React.createElement(index$2.default, {
+  }, show && React.createElement(index$2.default, {
+    _tid: "29"
+  }, "Conditional View")), React.createElement(index$9.default, {
     _tid: "24"
+  }, showPlainText && plainText), React.createElement(index$2.default, {
+    _tid: "25"
   }));
 }
 

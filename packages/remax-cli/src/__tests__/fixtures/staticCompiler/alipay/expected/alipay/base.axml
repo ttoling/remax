@@ -2,58 +2,69 @@
 <template name="TPL_1">
   <view ><text >{{'react component'}}</text>
 
-<block ><block a:if="{{node.children[1].children}}">
-  <block a:for="{{node.children[1].children || []}}" key="{{item.id}}">
+<text >{{'Text inside Fragment'}}</text>
+
+<block ><block a:if="{{node.children[2].children}}">
+  <block a:for="{{node.children[2].children || []}}" key="{{item.id}}">
     <template a:if="{{item.props._tid > 0}}" is="{{'TPL_' + item.props._tid}}" data="{{ node: item }}" />
     <template a:else is="{{ 'TPL_' + item.type }}" data="{{ node: item }}" />
   </block>
 </block>
-<template a:elif="{{node.children[1].props._tid > 0}}" is="{{'TPL_' + node.children[1].props._tid}}" data="{{ node: node.children[1] }}" />
-<template a:else is="{{ 'TPL_' + node.children[1].type }}" data="{{ node: node.children[1] }}" />
+<template a:elif="{{node.children[2].props._tid > 0}}" is="{{'TPL_' + node.children[2].props._tid}}" data="{{ node: node.children[2] }}" />
+<template a:else is="{{ 'TPL_' + node.children[2].type }}" data="{{ node: node.children[2] }}" />
+</block>
+
+<block ><block a:if="{{node.children[3].children}}">
+  <block a:for="{{node.children[3].children || []}}" key="{{item.id}}">
+    <template a:if="{{item.props._tid > 0}}" is="{{'TPL_' + item.props._tid}}" data="{{ node: item }}" />
+    <template a:else is="{{ 'TPL_' + item.type }}" data="{{ node: item }}" />
+  </block>
+</block>
+<template a:elif="{{node.children[3].props._tid > 0}}" is="{{'TPL_' + node.children[3].props._tid}}" data="{{ node: node.children[3] }}" />
+<template a:else is="{{ 'TPL_' + node.children[3].type }}" data="{{ node: node.children[3] }}" />
 </block>
 </view>
 
 </template>
 
 <template name="TPL_2">
-  <block >{{'expression entry'}}</block>
+  <view >{{'View inside Expression'}}</view>
 
 </template>
 
 <template name="TPL_3">
-  <text >{{'Fragment Text 1'}}</text>
+  <block >{{'expression entry'}}</block>
 
 </template>
 
 <template name="TPL_4">
-  <text >{{'Fragment Text 2'}}</text>
+  <text >{{'Fragment Text 1'}}</text>
 
 </template>
 
 <template name="TPL_5">
-  <text >{{'Fragment Text 3'}}</text>
+  <text >{{'Fragment Text 2'}}</text>
 
 </template>
 
 <template name="TPL_6">
-  <text >{{'Fragment Text 4'}}</text>
+  <text >{{'Fragment Text 3'}}</text>
 
 </template>
 
 <template name="TPL_7">
-  <block ><template is="TPL_DEFAULT" data="{{root: node}}" />
-</block>
+  <text >{{'Fragment Text 4'}}</text>
 
 </template>
 
 <template name="TPL_8">
-  <text >{{'Remax.Text'}}</text>
+  <block ><template is="TPL_DEFAULT" data="{{root: node}}" />
+</block>
 
 </template>
 
 <template name="TPL_9">
-  <block ><template is="TPL_DEFAULT" data="{{root: node}}" />
-</block>
+  <text >{{'Remax.Text'}}</text>
 
 </template>
 
@@ -64,6 +75,12 @@
 </template>
 
 <template name="TPL_11">
+  <block ><template is="TPL_DEFAULT" data="{{root: node}}" />
+</block>
+
+</template>
+
+<template name="TPL_12">
   <view class="className">{{'Count: '}}
 <block ><block a:if="{{node.children[1].children}}">
   <block a:for="{{node.children[1].children || []}}" key="{{item.id}}">
@@ -78,27 +95,14 @@
 
 </template>
 
-<template name="TPL_12">
+<template name="TPL_13">
   <view id="{{node.props['id']}}"
   class="class">{{'view'}}</view>
 
 </template>
 
-<template name="TPL_13">
-  <view >{{'custom view'}}</view>
-
-</template>
-
 <template name="TPL_14">
-  <block ><block a:if="{{node.children}}">
-  <block a:for="{{node.children || []}}" key="{{item.id}}">
-    <template a:if="{{item.props._tid > 0}}" is="{{'TPL_' + item.props._tid}}" data="{{ node: item }}" />
-    <template a:else is="{{ 'TPL_' + item.type }}" data="{{ node: item }}" />
-  </block>
-</block>
-<template a:elif="{{node.props._tid > 0}}" is="{{'TPL_' + node.props._tid}}" data="{{ node: node }}" />
-<template a:else is="{{ 'TPL_' + node.type }}" data="{{ node: node }}" />
-</block>
+  <view >{{'custom view'}}</view>
 
 </template>
 
@@ -116,6 +120,19 @@
 </template>
 
 <template name="TPL_16">
+  <block ><block a:if="{{node.children}}">
+  <block a:for="{{node.children || []}}" key="{{item.id}}">
+    <template a:if="{{item.props._tid > 0}}" is="{{'TPL_' + item.props._tid}}" data="{{ node: item }}" />
+    <template a:else is="{{ 'TPL_' + item.type }}" data="{{ node: item }}" />
+  </block>
+</block>
+<template a:elif="{{node.props._tid > 0}}" is="{{'TPL_' + node.props._tid}}" data="{{ node: node }}" />
+<template a:else is="{{ 'TPL_' + node.type }}" data="{{ node: node }}" />
+</block>
+
+</template>
+
+<template name="TPL_17">
   <view id="{{node.props['id']}}"
   disable-scroll="{{node.props['disable-scroll']}}"
   hover-class="{{node.props['hover-class']}}"
@@ -145,25 +162,19 @@
 
 </template>
 
-<template name="TPL_17">
+<template name="TPL_18">
   <text >{{'long long long long long long long long long long long long text long long long long long long long long long long long long text '}}</text>
 
 </template>
 
-<template name="TPL_18">
+<template name="TPL_19">
   <block ><template is="TPL_DEFAULT" data="{{root: node}}" />
 </block>
-
-</template>
-
-<template name="TPL_19">
-  <block >{{'Literal Expression'}}</block>
 
 </template>
 
 <template name="TPL_20">
-  <block ><template is="TPL_DEFAULT" data="{{root: node}}" />
-</block>
+  <block >{{'Literal Expression'}}</block>
 
 </template>
 
@@ -174,6 +185,12 @@
 </template>
 
 <template name="TPL_22">
+  <block ><template is="TPL_DEFAULT" data="{{root: node}}" />
+</block>
+
+</template>
+
+<template name="TPL_23">
   <block ><block a:if="{{node.children}}">
   <block a:for="{{node.children || []}}" key="{{item.id}}">
     <template a:if="{{item.props._tid > 0}}" is="{{'TPL_' + item.props._tid}}" data="{{ node: item }}" />
@@ -186,23 +203,28 @@
 
 </template>
 
-<template name="TPL_23">
+<template name="TPL_24">
   <text >{{ node.children[0].text }}
 </text>
 
 </template>
 
-<template name="TPL_24">
+<template name="TPL_25">
   <view ns:attr="1"></view>
 
 </template>
 
-<template name="TPL_25">
+<template name="TPL_26">
+  <view show="{{node.props['show']}}">{{'React Component First Child'}}</view>
+
+</template>
+
+<template name="TPL_27">
   <view >{{'create element children 1'}}</view>
 
 </template>
 
-<template name="TPL_26">
+<template name="TPL_28">
   <view >{{'array map: '}}
 <block ><block a:if="{{node.children[1].children}}">
   <block a:for="{{node.children[1].children || []}}" key="{{item.id}}">
@@ -217,28 +239,45 @@
 
 </template>
 
-<template name="TPL_27">
+<template name="TPL_29">
   <view >{{'Conditional View'}}</view>
 
 </template>
 
-<template name="TPL_28">
+<template name="TPL_30">
   <view ><text >{{'react component'}}</text>
 
-<block ><block a:if="{{node.children[1].children}}">
-  <block a:for="{{node.children[1].children || []}}" key="{{item.id}}">
+<text >{{'Text inside Fragment'}}</text>
+
+<block ><block a:if="{{node.children[2].children}}">
+  <block a:for="{{node.children[2].children || []}}" key="{{item.id}}">
     <template a:if="{{item.props._tid > 0}}" is="{{'TPL_' + item.props._tid}}" data="{{ node: item }}" />
     <template a:else is="{{ 'TPL_' + item.type }}" data="{{ node: item }}" />
   </block>
 </block>
-<template a:elif="{{node.children[1].props._tid > 0}}" is="{{'TPL_' + node.children[1].props._tid}}" data="{{ node: node.children[1] }}" />
-<template a:else is="{{ 'TPL_' + node.children[1].type }}" data="{{ node: node.children[1] }}" />
+<template a:elif="{{node.children[2].props._tid > 0}}" is="{{'TPL_' + node.children[2].props._tid}}" data="{{ node: node.children[2] }}" />
+<template a:else is="{{ 'TPL_' + node.children[2].type }}" data="{{ node: node.children[2] }}" />
+</block>
+
+<block ><block a:if="{{node.children[3].children}}">
+  <block a:for="{{node.children[3].children || []}}" key="{{item.id}}">
+    <template a:if="{{item.props._tid > 0}}" is="{{'TPL_' + item.props._tid}}" data="{{ node: item }}" />
+    <template a:else is="{{ 'TPL_' + item.type }}" data="{{ node: item }}" />
+  </block>
+</block>
+<template a:elif="{{node.children[3].props._tid > 0}}" is="{{'TPL_' + node.children[3].props._tid}}" data="{{ node: node.children[3] }}" />
+<template a:else is="{{ 'TPL_' + node.children[3].type }}" data="{{ node: node.children[3] }}" />
 </block>
 </view>
 
 </template>
 
-<template name="TPL_29">
+<template name="TPL_31">
+  <view >{{'View inside Expression'}}</view>
+
+</template>
+
+<template name="TPL_32">
   <view >{{'JSXText entry'}}
 <block >{{'expression entry'}}</block>
 
@@ -358,12 +397,17 @@
 
 </template>
 
-<template name="TPL_30">
+<template name="TPL_33">
+  <view show="{{node.props['show']}}">{{'React Component First Child'}}</view>
+
+</template>
+
+<template name="TPL_34">
   <view >{{'create element children 1'}}</view>
 
 </template>
 
-<template name="TPL_31">
+<template name="TPL_35">
   <view >{{'array map: '}}
 <block ><block a:if="{{node.children[1].children}}">
   <block a:for="{{node.children[1].children || []}}" key="{{item.id}}">
@@ -378,12 +422,12 @@
 
 </template>
 
-<template name="TPL_32">
+<template name="TPL_36">
   <view >{{'Conditional View'}}</view>
 
 </template>
 
-<template name="TPL_33">
+<template name="TPL_37">
   <view >{{'remax window'}}</view>
 
 </template>
