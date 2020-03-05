@@ -6,13 +6,15 @@ import { JSXNode, RenderNode } from '../types';
 import * as helpers from '../helpers';
 
 /**
- * 是否该记录这个 JSX 片段，用于生成模板
+ * 判断 JSX 元素是否处于一段 JSX 片段的顶部
+ * 用于标记 template id
  *
  * @param {NodePath} path
  * @returns
  */
-function shouldBeTemplate(path: NodePath<t.JSXElement | t.JSXFragment>) {
-  const parent = path.parent;
+function isRootPath(path: NodePath<t.JSXElement | t.JSXFragment>) {
+  // const { parent, parentPath } = path;
+  const { parent } = path;
 
   // case:
   // 记录根节点
@@ -21,19 +23,22 @@ function shouldBeTemplate(path: NodePath<t.JSXElement | t.JSXFragment>) {
     return true;
   }
 
-  // TODO: path 本身是一个 React 组件 或者 原生组件，也应该记录下来，
-  // 可以将它的 children 静态化成模板做优化
+  // TODO: parent 本身是一个非 host 组件(React 组件, 原生组件或者无法识别的组件等)，也应该记录下来，
+  // 可以将它的 children 静态化成模板
+  // if (!helpers.isHostComponentElement(parent, parentPath)) {
+  //   return true;
+  // }
 
   return false;
 }
 
 /**
- * 判断是否是入口 JSX 片段
+ * 判断是否是入口 JSX 元素
  *
  * @param {t.JSXElement} node
  * @returns
  */
-function isEntryPath(node: t.JSXElement | t.JSXFragment) {
+function isEntry(node: t.JSXElement | t.JSXFragment) {
   if (t.isJSXFragment(node)) {
     return false;
   }
@@ -109,6 +114,40 @@ function sortNodes(node: JSXNode): RenderNode[] {
 }
 
 /**
+ * 遍历 JSX 元素，生成所有模板
+ *
+ * @param {(NodePath<t.JSXElement | t.JSXFragment>)} path
+ * @param {*} state
+ * @returns
+ */
+function renderTemplates(
+  path: NodePath<t.JSXElement | t.JSXFragment>,
+  state: any
+) {
+  if (!isRootPath(path)) {
+    return;
+  }
+
+  const nodes = sortNodes(path.node);
+
+  nodes.forEach(node => {
+    // case: JSXExpressionContainer 已经都被包裹在 block 里面，entry 中不会有
+    // case: JSXFragment 已经被 sortNodes 方法处理掉了，不会出现
+    // case: JSXText TODO: 由于 JSXText 无法记录 template id，这里先不处理
+    // case: JSXSpreadChild 未知使用场景
+    if (!t.isJSXElement(node.node)) {
+      return;
+    }
+
+    const module = state.filename;
+    const templateID = markTemplateID(node.node.openingElement);
+    const template = createTemplate(node, path, module, ['node']);
+
+    templateInfoSet.add(templateID, template, module, isEntry(path.node));
+  });
+}
+
+/**
  * 将 JSX 片段保存起来，用于生成静态化的原生模板
  *
  * @export
@@ -120,54 +159,8 @@ export default function render() {
       templateInfoSet.remove(state.opts.filename);
     },
     visitor: {
-      JSXElement: (path: NodePath<t.JSXElement>, state: any) => {
-        if (!shouldBeTemplate(path)) {
-          return;
-        }
-
-        const nodes = sortNodes(path.node);
-
-        nodes.forEach((node, index) => {
-          const module = state.filename;
-          const templateID = markTemplateID(path.node.openingElement);
-          const template = createTemplate(node, path, module, ['node']);
-
-          templateInfoSet.add(
-            templateID,
-            template,
-            module,
-            isEntryPath(path.node)
-          );
-        });
-      },
-      JSXFragment: (path: NodePath<t.JSXFragment>, state: any) => {
-        if (!shouldBeTemplate(path)) {
-          return;
-        }
-
-        const nodes = sortNodes(path.node);
-
-        nodes.forEach((node, index) => {
-          // case: JSXExpressionContainer 已经都被包裹在 block 里面，entry 中不会有
-          // case: JSXFragment 已经被 sortNodes 方法处理掉了，不会出现
-          // case: JSXText TODO: 由于 JSXText 无法记录 template id，这里先不处理
-          // case: JSXSpreadChild 未知使用场景
-          if (!t.isJSXElement(node.node)) {
-            return;
-          }
-
-          const module = state.filename;
-          const templateID = markTemplateID(node.node.openingElement);
-          const template = createTemplate(node, path, module, ['node']);
-
-          templateInfoSet.add(
-            templateID,
-            template,
-            module,
-            isEntryPath(path.node)
-          );
-        });
-      },
+      JSXElement: renderTemplates,
+      JSXFragment: renderTemplates,
     },
   };
 }

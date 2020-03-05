@@ -36,10 +36,17 @@ export function getHostComponentName(node: t.JSXElement, path: NodePath) {
 
 /**
  * 判断 JSXElement 是否是 Host Component
- * @param node JSXElement
+ * @param node JSXElement|JSXFragment
  * @param path NodePath
  */
-export function isHostComponentElement(node: t.JSXElement, path: NodePath) {
+export function isHostComponentElement(
+  node: t.JSXElement | t.JSXFragment,
+  path: NodePath
+) {
+  if (t.isJSXFragment(node)) {
+    return false;
+  }
+
   /**
    * case:
    * import { View, View as CustomView } from 'remax/alipay';
