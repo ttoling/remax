@@ -469,6 +469,9 @@ var hostComponents = {
   },
   "editor": {
     "alias": {
+      "id": "id",
+      "className": "class",
+      "style": "style",
       "readOnly": "read-only",
       "placeholder": "placeholder",
       "showImgSize": "show-img-size",
