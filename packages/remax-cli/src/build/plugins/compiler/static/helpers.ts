@@ -237,7 +237,7 @@ export function getTemplateID(element: t.JSXOpeningElement) {
  * @param {NodePath<t.JSXElement>} path
  * @returns
  */
-export function isPlainTextLeaf(node: t.Node, path: NodePath<t.Node>) {
+export function isPlainTextLeaf(node: t.Node, path: NodePath) {
   if (!t.isJSXElement(node)) {
     return false;
   }
