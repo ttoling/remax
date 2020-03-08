@@ -1473,17 +1473,30 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 // The Symbol used to tag the ReactElement-like types. If there is no native Symbol
 // nor polyfill, then a plain number is used for performance.
 var hasSymbol = typeof Symbol === 'function' && Symbol["for"];
-var REACT_ELEMENT_TYPE = hasSymbol ? Symbol["for"]('react.element') : 0xeac7;
 var REACT_PORTAL_TYPE = hasSymbol ? Symbol["for"]('react.portal') : 0xeaca;
+var REACT_FRAGMENT_TYPE = hasSymbol ? Symbol["for"]('react.fragment') : 0xeacb;
+var REACT_STRICT_MODE_TYPE = hasSymbol ? Symbol["for"]('react.strict_mode') : 0xeacc;
+var REACT_PROFILER_TYPE = hasSymbol ? Symbol["for"]('react.profiler') : 0xead2;
+var REACT_PROVIDER_TYPE = hasSymbol ? Symbol["for"]('react.provider') : 0xeacd;
+var REACT_CONTEXT_TYPE = hasSymbol ? Symbol["for"]('react.context') : 0xeace; // TODO: We don't use AsyncMode or ConcurrentMode anymore. They were temporary
+var REACT_CONCURRENT_MODE_TYPE = hasSymbol ? Symbol["for"]('react.concurrent_mode') : 0xeacf;
 var REACT_FORWARD_REF_TYPE = hasSymbol ? Symbol["for"]('react.forward_ref') : 0xead0;
+var REACT_SUSPENSE_TYPE = hasSymbol ? Symbol["for"]('react.suspense') : 0xead1;
+var REACT_SUSPENSE_LIST_TYPE = hasSymbol ? Symbol["for"]('react.suspense_list') : 0xead8;
+var REACT_MEMO_TYPE = hasSymbol ? Symbol["for"]('react.memo') : 0xead3;
+var REACT_LAZY_TYPE = hasSymbol ? Symbol["for"]('react.lazy') : 0xead4;
+var REACT_FUNDAMENTAL_TYPE = hasSymbol ? Symbol["for"]('react.fundamental') : 0xead5;
+var REACT_RESPONDER_TYPE = hasSymbol ? Symbol["for"]('react.responder') : 0xead6;
+var REACT_SCOPE_TYPE = hasSymbol ? Symbol["for"]('react.scope') : 0xead7;
+function isValidElementType(type) {
+  return typeof type === 'string' || typeof type === 'function' || // Note: its typeof might be other than 'symbol' or 'number' if it's a polyfill.
+  type === REACT_FRAGMENT_TYPE || type === REACT_CONCURRENT_MODE_TYPE || type === REACT_PROFILER_TYPE || type === REACT_STRICT_MODE_TYPE || type === REACT_SUSPENSE_TYPE || type === REACT_SUSPENSE_LIST_TYPE || _typeof(type) === 'object' && type !== null && (type.$$typeof === REACT_LAZY_TYPE || type.$$typeof === REACT_MEMO_TYPE || type.$$typeof === REACT_PROVIDER_TYPE || type.$$typeof === REACT_CONTEXT_TYPE || type.$$typeof === REACT_FORWARD_REF_TYPE || type.$$typeof === REACT_FUNDAMENTAL_TYPE || type.$$typeof === REACT_RESPONDER_TYPE || type.$$typeof === REACT_SCOPE_TYPE);
+}
 var ForwardRef = REACT_FORWARD_REF_TYPE;
 var Portal = REACT_PORTAL_TYPE;
-function isElement(object) {
-  return _typeof(object) === 'object' && object !== null && object.$$typeof === REACT_ELEMENT_TYPE;
-}
 
 function isPlainObject(obj) {
-  if (isElement(obj)) {
+  if (isValidElementType(obj)) {
     return false;
   }
 
@@ -1526,6 +1539,24 @@ var __extends = undefined && undefined.__extends || function () {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
 }();
+
+var __assign$1 = undefined && undefined.__assign || function () {
+  __assign$1 = Object.assign || function (t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+      s = arguments[i];
+
+      for (var p in s) {
+        if (Object.prototype.hasOwnProperty.call(s, p)) {
+          t[p] = s[p];
+        }
+      }
+    }
+
+    return t;
+  };
+
+  return __assign$1.apply(this, arguments);
+};
 
 var DefaultAppComponent =
 /** @class */
@@ -1642,7 +1673,18 @@ function createAppConfig(App) {
   };
 
   if (isPlainObject(App)) {
-    return Object.assign(App, createConfig());
+    var NativeApp =
+    /** @class */
+    function () {
+      function NativeApp() {
+        Object.assign(this, __assign$1({}, App));
+      }
+
+      return NativeApp;
+    }();
+
+    Object.assign(NativeApp.prototype, createConfig());
+    return new NativeApp();
   } // 兼容老的写法和原生写法
 
 
@@ -2168,42 +2210,6 @@ function createPageConfig(Page, singleton) {
   return config;
 }
 
-var __assign$1 = undefined && undefined.__assign || function () {
-  __assign$1 = Object.assign || function (t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-      s = arguments[i];
-
-      for (var p in s) {
-        if (Object.prototype.hasOwnProperty.call(s, p)) {
-          t[p] = s[p];
-        }
-      }
-    }
-
-    return t;
-  };
-
-  return __assign$1.apply(this, arguments);
-};
-function createNativeComponent(name) {
-  return React.forwardRef(function (props, ref) {
-    if (typeof ref === 'string') {
-      console.error('不支持使用 string 获取小程序组件 ref，请使用回调或 React.createRef/React.useRef');
-    }
-
-    var newProps = __assign$1({}, props);
-
-    newProps.__ref = typeof ref === 'function' ? ref : function (e) {
-      if (ref) {
-        ref.current = e;
-      }
-    };
-    return React.createElement(name, newProps, props.children);
-  });
-}
-
-var unstable_batchedUpdates = ReactReconcilerInst.batchedUpdates;
-
 var __assign$2 = undefined && undefined.__assign || function () {
   __assign$2 = Object.assign || function (t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -2221,11 +2227,47 @@ var __assign$2 = undefined && undefined.__assign || function () {
 
   return __assign$2.apply(this, arguments);
 };
+function createNativeComponent(name) {
+  return React.forwardRef(function (props, ref) {
+    if (typeof ref === 'string') {
+      console.error('不支持使用 string 获取小程序组件 ref，请使用回调或 React.createRef/React.useRef');
+    }
+
+    var newProps = __assign$2({}, props);
+
+    newProps.__ref = typeof ref === 'function' ? ref : function (e) {
+      if (ref) {
+        ref.current = e;
+      }
+    };
+    return React.createElement(name, newProps, props.children);
+  });
+}
+
+var unstable_batchedUpdates = ReactReconcilerInst.batchedUpdates;
+
+var __assign$3 = undefined && undefined.__assign || function () {
+  __assign$3 = Object.assign || function (t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+      s = arguments[i];
+
+      for (var p in s) {
+        if (Object.prototype.hasOwnProperty.call(s, p)) {
+          t[p] = s[p];
+        }
+      }
+    }
+
+    return t;
+  };
+
+  return __assign$3.apply(this, arguments);
+};
 function createHostComponent(name) {
   var Component = function Component(props, ref) {
     var _a = props.children,
         children = _a === void 0 ? [] : _a;
-    return React.createElement(name, __assign$2(__assign$2({}, props), {
+    return React.createElement(name, __assign$3(__assign$3({}, props), {
       ref: ref
     }), children);
   };
@@ -2301,8 +2343,8 @@ createHostComponent('contact-button');
 
 createHostComponent('video');
 
-var __assign$3 = undefined && undefined.__assign || function () {
-  __assign$3 = Object.assign || function (t) {
+var __assign$4 = undefined && undefined.__assign || function () {
+  __assign$4 = Object.assign || function (t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
       s = arguments[i];
 
@@ -2316,7 +2358,7 @@ var __assign$3 = undefined && undefined.__assign || function () {
     return t;
   };
 
-  return __assign$3.apply(this, arguments);
+  return __assign$4.apply(this, arguments);
 };
 
 function promisify(api) {
@@ -2327,7 +2369,7 @@ function promisify(api) {
 
     return new Promise(function (resolve, reject) {
       var promisifyArg = arg;
-      api(__assign$3(__assign$3({}, promisifyArg), {
+      api(__assign$4(__assign$4({}, promisifyArg), {
         success: function success(res) {
           if (promisifyArg && typeof promisifyArg.success === 'function') {
             promisifyArg.success(res);
