@@ -1,13 +1,18 @@
 import * as React from 'react';
 import createPageWrapper from './createPageWrapper';
+import createAppConfig from './createAppConfig';
 import { Lifecycle, callbackName } from './lifecycle';
 import Container from './Container';
 import { createPortal } from './ReactPortal';
+import { SCOPE } from './createAppConfig';
 
 let idCounter = 0;
 
-export default function createPageConfig(Page: React.ComponentType<any>) {
-  const app = getApp() as any;
+export default function createPageConfig(
+  Page: React.ComponentType<any>,
+  singleton = true
+) {
+  const app = singleton ? (getApp() as any) : createAppConfig({});
   const id = idCounter;
   idCounter += 1;
 
@@ -38,13 +43,13 @@ export default function createPageConfig(Page: React.ComponentType<any>) {
         this.pageId
       );
 
-      app._mount(this);
+      app[SCOPE]._mount(this);
     },
 
     onUnload(this: any) {
       this.unloaded = true;
       this.container.clearUpdate();
-      app._unmount(this);
+      app[SCOPE]._unmount(this);
     },
 
     /**

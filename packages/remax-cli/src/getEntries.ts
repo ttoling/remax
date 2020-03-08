@@ -24,13 +24,9 @@ export function searchFile(file: string, strict?: boolean) {
 }
 
 export const getAppConfig = (options: RemaxOptions) => {
-  const appConfigPath: string = path.join(
-    options.cwd,
-    options.rootDir,
-    'app.config'
-  );
+  const appConfigPath: string = path.join(options.cwd, options.rootDir, 'app');
 
-  return readManifest(appConfigPath, API.adapter.name, true) as AppConfig;
+  return readManifest(appConfigPath, API.adapter.name) as AppConfig;
 };
 
 // TODO: getEntries 处理 context 的逻辑要去掉
@@ -49,20 +45,17 @@ export default function getEntries(
   }
 
   const entries: Entries = {
-    app: searchFile(path.join(options.cwd, options.rootDir, 'app'), true),
+    app: searchFile(path.join(options.cwd, options.rootDir, 'app')),
     pages: [],
     images: [],
   };
 
-  entries.pages = pages.reduce(
-    (ret: Array<{ path: string; file: string }>, page: string) => {
-      return [
-        ...ret,
-        searchFile(path.join(options.cwd, options.rootDir, page), true),
-      ].filter(page => !!page);
-    },
-    []
-  );
+  entries.pages = pages.reduce((ret: string[], page: string) => {
+    return [
+      ...ret,
+      searchFile(path.join(options.cwd, options.rootDir, page), true),
+    ].filter(page => !!page);
+  }, []);
 
   subpackages.forEach((pack: { pages: string[]; root: string }) => {
     entries.pages = entries.pages.concat(

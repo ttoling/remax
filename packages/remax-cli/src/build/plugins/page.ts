@@ -4,17 +4,21 @@ import { addNamed } from '@babel/helper-module-imports';
 
 function pageConfigExpression(
   path: NodePath<t.ExportDefaultDeclaration>,
-  id: t.Identifier
+  id: t.Identifier,
+  singleton: boolean
 ) {
   const createId = addNamed(path, 'createPageConfig', 'remax');
   path.insertAfter(
     t.exportDefaultDeclaration(
-      t.callExpression(t.identifier('Page'), [t.callExpression(createId, [id])])
+      t.callExpression(t.identifier('Page'), [
+        t.callExpression(createId, [id]),
+        t.booleanLiteral(singleton),
+      ])
     )
   );
 }
 
-export default () => ({
+export default (singleton: boolean) => ({
   visitor: {
     ExportDefaultDeclaration: (path: NodePath<t.ExportDefaultDeclaration>) => {
       if (t.isExpression(path.node.declaration)) {
@@ -25,7 +29,7 @@ export default () => ({
             t.variableDeclarator(pageId, declaration),
           ])
         );
-        pageConfigExpression(path, pageId);
+        pageConfigExpression(path, pageId, singleton);
         path.stop();
       } else if (
         t.isFunctionDeclaration(path.node.declaration) ||
@@ -35,7 +39,7 @@ export default () => ({
         const pageId = path.scope.generateUidIdentifierBasedOnNode(path.node);
         declaration.id = pageId;
         path.replaceWith(declaration);
-        pageConfigExpression(path, pageId);
+        pageConfigExpression(path, pageId, singleton);
         path.stop();
       }
     },

@@ -6,6 +6,22 @@ var ReactReconciler = _interopDefault(require('react-reconciler'));
 var scheduler = require('scheduler');
 var React = require('react');
 
+function _typeof(obj) {
+  "@babel/helpers - typeof";
+
+  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+    _typeof = function (obj) {
+      return typeof obj;
+    };
+  } else {
+    _typeof = function (obj) {
+      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    };
+  }
+
+  return _typeof(obj);
+}
+
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -1474,10 +1490,31 @@ var context = {
 // The Symbol used to tag the ReactElement-like types. If there is no native Symbol
 // nor polyfill, then a plain number is used for performance.
 var hasSymbol = typeof Symbol === 'function' && Symbol["for"];
+var REACT_ELEMENT_TYPE = hasSymbol ? Symbol["for"]('react.element') : 0xeac7;
 var REACT_PORTAL_TYPE = hasSymbol ? Symbol["for"]('react.portal') : 0xeaca;
 var REACT_FORWARD_REF_TYPE = hasSymbol ? Symbol["for"]('react.forward_ref') : 0xead0;
 var ForwardRef = REACT_FORWARD_REF_TYPE;
 var Portal = REACT_PORTAL_TYPE;
+function isElement(object) {
+  return _typeof(object) === 'object' && object !== null && object.$$typeof === REACT_ELEMENT_TYPE;
+}
+
+function isPlainObject(obj) {
+  if (isElement(obj)) {
+    return false;
+  }
+
+  if (_typeof(obj) == 'object' && obj !== null) {
+    if (typeof Object.getPrototypeOf == 'function') {
+      var proto = Object.getPrototypeOf(obj);
+      return proto === Object.prototype || proto === null;
+    }
+
+    return Object.prototype.toString.call(obj) == '[object Object]';
+  }
+
+  return false;
+}
 
 var __extends = undefined && undefined.__extends || function () {
   var _extendStatics = function extendStatics(d, b) {
@@ -1521,15 +1558,18 @@ function (_super) {
   return DefaultAppComponent;
 }(React.Component);
 
+var SCOPE = '__remax-scope__';
 function createAppConfig(App) {
   var _this = this;
 
   var createConfig = function createConfig(AppComponent) {
+    var _a;
+
     if (AppComponent === void 0) {
       AppComponent = DefaultAppComponent;
     }
 
-    var config = {
+    var scope = {
       _container: new AppContainer(_this),
       _pages: [],
       _instance: React.createRef(),
@@ -1558,28 +1598,6 @@ function createAppConfig(App) {
           return (_a = this._instance.current)[callback].apply(_a, args);
         }
       },
-      onLaunch: function onLaunch(options) {
-        this._render();
-
-        this.callLifecycle(AppLifecycle.launch, options);
-      },
-      onShow: function onShow(options) {
-        this.callLifecycle(AppLifecycle.show, options);
-      },
-      onHide: function onHide() {
-        this.callLifecycle(AppLifecycle.hide);
-      },
-      onError: function onError(error) {
-        this.callLifecycle(AppLifecycle.error, error);
-      },
-      // 支付宝
-      onShareAppMessage: function onShareAppMessage(options) {
-        this.callLifecycle(AppLifecycle.shareAppMessage, options);
-      },
-      // 微信
-      onPageNotFound: function onPageNotFound(options) {
-        this.callLifecycle(AppLifecycle.pageNotFound, options);
-      },
       _mount: function _mount(pageInstance) {
         this._pages.push(pageInstance);
 
@@ -1602,18 +1620,39 @@ function createAppConfig(App) {
         })), this._container);
       }
     };
+    var config = (_a = {}, _a[SCOPE] = scope, _a.onLaunch = function (options) {
+      this[SCOPE]._render();
+
+      this[SCOPE].callLifecycle(AppLifecycle.launch, options);
+    }, _a.onShow = function (options) {
+      this[SCOPE].callLifecycle(AppLifecycle.show, options);
+    }, _a.onHide = function () {
+      this[SCOPE].callLifecycle(AppLifecycle.hide);
+    }, _a.onError = function (error) {
+      this[SCOPE].callLifecycle(AppLifecycle.error, error);
+    }, // 支付宝
+    _a.onShareAppMessage = function (options) {
+      this[SCOPE].callLifecycle(AppLifecycle.shareAppMessage, options);
+    }, // 微信
+    _a.onPageNotFound = function (options) {
+      this[SCOPE].callLifecycle(AppLifecycle.pageNotFound, options);
+    }, _a);
     return config;
-  }; // 兼容老的写法
+  };
+
+  if (isPlainObject(App)) {
+    return Object.assign(App, createConfig());
+  } // 兼容老的写法和原生写法
 
 
   if (isClass(App) && !isClassComponent(App)) {
     // eslint-disable-next-line no-console
-    console.warn('使用非 React 组件定义 App 的方式已经废弃，详细请参考：https://remaxjs.org/guide/framework');
+    console.warn('使用非 React 组件定义 App 的方式已经废弃，详细请参考：https://remaxjs.org/guide/framework。');
     Object.assign(App.prototype, createConfig());
     return new App();
-  } else {
-    return createConfig(App);
   }
+
+  return createConfig(App);
 }
 
 var PageInstanceContext = React.createContext(null);
@@ -1959,8 +1998,12 @@ function createPortal(children, containerInfo, key) {
 }
 
 var idCounter = 0;
-function createPageConfig(Page) {
-  var app = getApp();
+function createPageConfig(Page, singleton) {
+  if (singleton === void 0) {
+    singleton = true;
+  }
+
+  var app = singleton ? getApp() : createAppConfig({});
   var id = idCounter;
   idCounter += 1;
   var config = {
@@ -1982,13 +2025,13 @@ function createPageConfig(Page) {
         ref: this.wrapperRef
       }), this.container, this.pageId);
 
-      app._mount(this);
+      app[SCOPE]._mount(this);
     },
     onUnload: function onUnload() {
       this.unloaded = true;
       this.container.clearUpdate();
 
-      app._unmount(this);
+      app[SCOPE]._unmount(this);
     },
 
     /**

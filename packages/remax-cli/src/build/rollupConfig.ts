@@ -10,7 +10,6 @@ import json from '@rollup/plugin-json';
 import postcss from '@remax/rollup-plugin-postcss';
 import postcssUrl from './plugins/postcssUrl';
 import progress from 'rollup-plugin-progress';
-import clean from 'rollup-plugin-delete';
 import copy from 'rollup-plugin-copy';
 import stub from './plugins/stub';
 import pxToUnits from '@remax/postcss-px2units';
@@ -108,7 +107,7 @@ export default function rollupConfig(
     babel({
       include: entries.pages,
       extensions: without(extensions, '.json'),
-      usePlugins: [nativeComponentsBabelPlugin(options), page],
+      usePlugins: [nativeComponentsBabelPlugin(options), page(!!entries.app)],
       reactPreset: false,
     }),
     babel({
@@ -181,7 +180,7 @@ export default function rollupConfig(
     }),
     fixRegeneratorRuntime(),
     nativeComponents(options, entries.pages),
-    template(options, context),
+    template(options, !!entries.app, context),
   ];
 
   /* istanbul ignore next */
@@ -189,17 +188,9 @@ export default function rollupConfig(
     plugins.push(progress());
   }
 
-  if (process.env.NODE_ENV === 'production') {
-    plugins.unshift(
-      clean({
-        targets: [path.join(options.output, '*'), '!.tea'],
-      })
-    );
-  }
-
   let config: RollupOptions = {
     treeshake: process.env.NODE_ENV === 'production',
-    input: [entries.app, ...entries.pages, ...entries.images],
+    input: [entries.app, ...entries.pages, ...entries.images].filter(i => i),
     output: {
       dir: options.output,
       entryFileNames: '[name]',

@@ -38,25 +38,15 @@ function readJavascriptManifest(path: string, target: string) {
   return config;
 }
 
-export default function readManifest(
-  path: string,
-  target: string,
-  strict = false
-) {
-  const tsPath = path + '.ts';
+export default function readManifest(path: string, target: string) {
+  const tsPath = path + '.config.ts';
   if (fs.existsSync(tsPath)) {
     return readTypescriptManifest(tsPath, target);
   }
 
-  const jsPath = path + '.js';
+  const jsPath = path + '.config.js';
   if (fs.existsSync(jsPath)) {
     return readJavascriptManifest(jsPath, target);
-  }
-
-  if (strict) {
-    throw new Error(
-      `${path}.ts|js 文件不存在，请先创建配置文件，参考 https://remaxjs.org/guide/config`
-    );
   }
 
   return {};

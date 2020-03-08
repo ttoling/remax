@@ -6,6 +6,7 @@ import isClassComponent from './utils/isClassComponent';
 import { AppLifecycle, callbackName } from './lifecycle';
 import AppInstanceContext from './AppInstanceContext';
 import { ForwardRef } from './ReactIs';
+import isPlainObject from './utils/isPlainObject';
 
 class DefaultAppComponent extends React.Component {
   render() {
@@ -13,11 +14,13 @@ class DefaultAppComponent extends React.Component {
   }
 }
 
+export const SCOPE = '__remax-scope__';
+
 export default function createAppConfig(this: any, App: any) {
   const createConfig = (
     AppComponent: React.ComponentType<any> = DefaultAppComponent
   ) => {
-    const config = {
+    const scope = {
       _container: new AppContainer(this),
 
       _pages: [] as any[],
@@ -38,34 +41,6 @@ export default function createAppConfig(this: any, App: any) {
         if (this._instance.current && this._instance.current[callback]) {
           return this._instance.current[callback](...args);
         }
-      },
-
-      onLaunch(options: any) {
-        this._render();
-
-        this.callLifecycle(AppLifecycle.launch, options);
-      },
-
-      onShow(options: any) {
-        this.callLifecycle(AppLifecycle.show, options);
-      },
-
-      onHide() {
-        this.callLifecycle(AppLifecycle.hide);
-      },
-
-      onError(error: any) {
-        this.callLifecycle(AppLifecycle.error, error);
-      },
-
-      // 支付宝
-      onShareAppMessage(options: any) {
-        this.callLifecycle(AppLifecycle.shareAppMessage, options);
-      },
-
-      // 微信
-      onPageNotFound(options: any) {
-        this.callLifecycle(AppLifecycle.pageNotFound, options);
       },
 
       _mount(pageInstance: any) {
@@ -99,18 +74,62 @@ export default function createAppConfig(this: any, App: any) {
       },
     };
 
+    const config = {
+      [SCOPE]: scope,
+
+      onLaunch(options: any) {
+        this[SCOPE]._render();
+
+        this[SCOPE].callLifecycle(AppLifecycle.launch, options);
+      },
+
+      onShow(options: any) {
+        this[SCOPE].callLifecycle(AppLifecycle.show, options);
+      },
+
+      onHide() {
+        this[SCOPE].callLifecycle(AppLifecycle.hide);
+      },
+
+      onError(error: any) {
+        this[SCOPE].callLifecycle(AppLifecycle.error, error);
+      },
+
+      // 支付宝
+      onShareAppMessage(options: any) {
+        this[SCOPE].callLifecycle(AppLifecycle.shareAppMessage, options);
+      },
+
+      // 微信
+      onPageNotFound(options: any) {
+        this[SCOPE].callLifecycle(AppLifecycle.pageNotFound, options);
+      },
+    };
+
     return config;
   };
 
-  // 兼容老的写法
+  if (isPlainObject(App)) {
+    class NativeApp {
+      constructor() {
+        Object.assign(this, { ...App });
+      }
+    }
+
+    Object.assign(NativeApp.prototype, createConfig());
+
+    return new NativeApp();
+  }
+
+  // 兼容老的写法和原生写法
   if (isClass(App) && !isClassComponent(App)) {
     // eslint-disable-next-line no-console
     console.warn(
-      '使用非 React 组件定义 App 的方式已经废弃，详细请参考：https://remaxjs.org/guide/framework'
+      '使用非 React 组件定义 App 的方式已经废弃，详细请参考：https://remaxjs.org/guide/framework。'
     );
     Object.assign(App.prototype, createConfig());
     return new App();
-  } else {
-    return createConfig(App);
   }
+
+  return createConfig(App);
 }
