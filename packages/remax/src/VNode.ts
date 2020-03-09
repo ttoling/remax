@@ -1,6 +1,11 @@
 import propsAlias from './propsAlias';
 import { TYPE_TEXT } from './constants';
 import Container from './Container';
+import { getRawRenderNode, equal, TEMPLATE_ID } from './renderNodes';
+
+function didVNodeHasSideEffect(node: VNode) {
+  return !equal(node, getRawRenderNode(node));
+}
 
 export interface RawNode {
   id?: number;
@@ -18,10 +23,16 @@ function toRawNode(node: VNode) {
     };
   }
 
+  const props = propsAlias(node.props, node.type);
+
+  if (didVNodeHasSideEffect(node)) {
+    delete props[TEMPLATE_ID];
+  }
+
   return {
     id: node.id,
     type: node.type,
-    props: propsAlias(node.props, node.type),
+    props,
     children: [],
     text: node.text,
   };

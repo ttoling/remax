@@ -2,7 +2,18 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { RemaxOptions } from 'remax-types';
 import stringifyHostComponents from './stringifyHostComponents';
+import { templateInfoMap } from './plugins/compiler/static/render/templates';
 import { Replacement } from '@rollup/plugin-replace';
+
+function stringifyRawRenderNode() {
+  return JSON.stringify(
+    templateInfoMap.values().map(i => ({
+      id: i.id,
+      isEntry: i.isEntry,
+      rawNode: i.rawNode,
+    }))
+  );
+}
 
 type Env = Record<string, string | undefined | Replacement>;
 
@@ -62,6 +73,7 @@ export default function getEnvironment(options: RemaxOptions, target: string) {
     __REMAX_DEBUG__: JSON.stringify(process.env.REMAX_DEBUG),
     __REMAX_PX2RPX__: JSON.stringify(options.pxToRpx),
     __REMAX_HOST_COMPONENTS__: () => stringifyHostComponents(),
+    __REMAX_RAW_RENDER_NODES__: () => stringifyRawRenderNode(),
   };
 
   return { raw, stringified };

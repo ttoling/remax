@@ -1,6 +1,6 @@
 import * as t from '@babel/types';
 import { TEMPLATE_ID, REACT_KEY, LEAF, ENTRY } from '../../constants';
-import API from '../../../../../../API';
+import * as helpers from '../../helpers';
 
 /**
  * 生成属性值模板
@@ -63,46 +63,34 @@ export function createAttributesTemplate(
   attributes: Array<t.JSXAttribute | t.JSXSpreadAttribute>
 ) {
   const SEPARATOR = '\n  ';
-  const hostComponent = API.getHostComponents().get(componentType);
   let template: Array<[string, string]> = [];
+
+  const { hasSpreadAttribute, props } = helpers.getProps(
+    attributes,
+    componentType
+  );
 
   // case: Spread Attributes
   // 包含了 Spread Attributes 就返回所有属性
-  if (hostComponent && attributes.find(attr => t.isJSXSpreadAttribute(attr))) {
-    template = hostComponent.props.map(prop => [
+  if (hasSpreadAttribute) {
+    template = props.map(([prop]) => [
       prop,
       createAttributeValueTemplate(prop, dataPath),
     ]);
-  } else {
-    template = (attributes as t.JSXAttribute[])
-      // template id 不渲染
-      // react "key" 属性 不渲染
-      // leaf 属性 不渲染
-      // entry 属性 不渲染
-      .filter(
-        attr =>
-          ![TEMPLATE_ID, REACT_KEY, LEAF, ENTRY].find(k => k === attr.name.name)
-      )
-      .map(attr => {
-        const name = attr.name;
-        let attrName = '';
-
-        if (t.isJSXIdentifier(name)) {
-          attrName = name.name;
-        }
-
-        if (t.isJSXNamespacedName(name)) {
-          attrName = name.namespace.name + ':' + name.name.name;
-        }
-
-        const prop = hostComponent?.alias?.[attrName] ?? attrName;
-
-        return [
-          prop,
-          createAttributeValueTemplate(prop, dataPath, attr.value as any),
-        ];
-      });
   }
+
+  template = props
+    // template id 不渲染
+    // react "key" 属性 不渲染
+    // leaf 属性 不渲染
+    // entry 属性 不渲染
+    .filter(
+      ([prop]) => ![TEMPLATE_ID, REACT_KEY, LEAF, ENTRY].find(k => k === prop)
+    )
+    .map(([prop, value]) => [
+      prop,
+      createAttributeValueTemplate(prop, dataPath, value),
+    ]);
 
   return template.map(([prop, value]) => `${prop}=${value}`).join(SEPARATOR);
 }

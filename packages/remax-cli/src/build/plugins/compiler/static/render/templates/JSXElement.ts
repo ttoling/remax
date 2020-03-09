@@ -4,7 +4,7 @@ import { kebabCase } from 'lodash';
 import * as helpers from '../../helpers';
 import { createAttributesTemplate } from './attributes';
 import stringPath from './stringPath';
-import { RenderNode } from '../../types';
+import { RenderNode } from 'remax-types';
 import { EXPRESSION_BLOCK } from '../../constants';
 
 /**

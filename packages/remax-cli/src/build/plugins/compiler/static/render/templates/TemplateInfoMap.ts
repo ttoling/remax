@@ -1,4 +1,8 @@
+import { RenderNode, RawRenderNode } from 'remax-types';
+
 export interface TemplateInfo {
+  rootNode: RenderNode;
+  rawNode: RawRenderNode;
   template: string;
   id: string;
   module: string;
@@ -10,17 +14,24 @@ export interface TemplateInfo {
  *
  */
 export default class TemplateInfoMap {
-  public values() {
-    return this.templates;
+  public values(module?: string) {
+    return this.templates.filter(t => !module || t.module === module);
   }
 
   public has(id: string) {
     return !!this.templates.find(t => t.id === id);
   }
 
-  public set(id: string, template: string, module: string, isEntry?: boolean) {
+  public set(
+    rootNode: RenderNode,
+    id: string,
+    module: string,
+    template: string,
+    rawNode: RawRenderNode,
+    isEntry?: boolean
+  ) {
     this.templates = this.templates.filter(t => t.id !== id);
-    this.templates.push({ template, module, id, isEntry });
+    this.templates.push({ rootNode, template, rawNode, module, id, isEntry });
   }
 
   public remove(module: string) {

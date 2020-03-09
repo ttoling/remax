@@ -2,6 +2,7 @@ import * as t from '@babel/types';
 import { NodePath } from '@babel/traverse';
 import * as helpers from './helpers';
 import { STUB_BLOCK, TEMPLATE_ID, EXPRESSION_BLOCK, ENTRY } from './constants';
+import { RenderNode } from 'remax-types';
 
 function isStubAttribute(attribute: t.JSXAttribute | t.JSXSpreadAttribute) {
   if (t.isJSXSpreadAttribute(attribute)) {
@@ -35,11 +36,10 @@ function isStubAttribute(attribute: t.JSXAttribute | t.JSXSpreadAttribute) {
 
 /**
  * 判断是否是一个可以 stub 的元素
- *
- * @param {t.JSXElement|t.JSXFragment} node
- * @returns
  */
-function isStubElement(node: t.JSXElement | t.JSXFragment, path: NodePath) {
+export function isStubElement(renderNode: RenderNode, path: NodePath) {
+  const { node, children } = renderNode;
+
   let isSelfStub = false;
 
   if (t.isJSXFragment(node)) {
@@ -65,17 +65,17 @@ function isStubElement(node: t.JSXElement | t.JSXFragment, path: NodePath) {
     isSelfStub = attributes.every(isStubAttribute);
   }
 
-  const isChildrenVoid = node.children.every(c => {
-    if (t.isJSXElement(c) || t.isJSXFragment(c)) {
+  const isChildrenVoid = children.every(c => {
+    if (t.isJSXElement(c.node) || t.isJSXFragment(c.node)) {
       return isStubElement(c, path);
     }
 
-    if (t.isJSXText(c)) {
+    if (t.isJSXText(c.node)) {
       return true;
     }
 
-    if (t.isJSXExpressionContainer(c)) {
-      if (t.isLiteral(c.expression)) {
+    if (t.isJSXExpressionContainer(c.node)) {
+      if (t.isLiteral(c.node.expression)) {
         return true;
       }
     }
@@ -89,36 +89,35 @@ function isStubElement(node: t.JSXElement | t.JSXFragment, path: NodePath) {
 }
 
 /**
- * 在生成模板后，对 jsx 再处理
+ * 在生成模板后，将空元素置为 stub element
  * 用于帮助简化 React 生成 虚拟 dom
- *
- * @export
- * @returns
  */
-export default function postProcess() {
-  return {
-    visitor: {
-      JSXElement: (path: NodePath<t.JSXElement>) => {
-        const node = path.node;
+export function asStubElement(renderNode: RenderNode, path: NodePath) {
+  const { node, children } = renderNode;
 
-        if ((node.openingElement.name as any)?.name === STUB_BLOCK) {
-          return;
-        }
+  children.forEach(c => {
+    asStubElement(c, path);
+  });
 
-        // 非 host component 不处理
-        if (!helpers.isHostComponentElement(node, path)) {
-          return false;
-        }
+  if (!t.isJSXElement(node)) {
+    return;
+  }
 
-        // 删除可以被 stub 的属性
-        node.openingElement.attributes = node.openingElement.attributes.filter(
-          attr => !isStubAttribute(attr)
-        );
+  if ((node.openingElement.name as any)?.name === STUB_BLOCK) {
+    return;
+  }
 
-        if (isStubElement(node, path)) {
-          helpers.replacedWithStubBlock(node, path);
-        }
-      },
-    },
-  };
+  // 非 host component 不处理
+  if (!helpers.isHostComponentElement(node, path)) {
+    return false;
+  }
+
+  // 删除可以被 stub 的属性
+  node.openingElement.attributes = node.openingElement.attributes.filter(
+    attr => !isStubAttribute(attr)
+  );
+
+  if (isStubElement(renderNode, path)) {
+    helpers.replacedWithStubBlock(node, path);
+  }
 }

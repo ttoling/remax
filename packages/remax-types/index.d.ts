@@ -179,3 +179,21 @@ export interface RemaxNodePlugin {
 }
 
 export type RemaxNodePluginConstructor = (options?: any) => RemaxNodePlugin;
+
+export type JSXNode =
+  | t.JSXElement
+  | t.JSXFragment
+  | t.JSXText
+  | t.JSXExpressionContainer
+  | t.JSXSpreadChild;
+
+export interface RenderNode<T = JSXNode> {
+  node: T;
+  children: RenderNode[];
+}
+
+export interface RawRenderNode {
+  type: string;
+  props: object;
+  children: RawRenderNode[];
+}

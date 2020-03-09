@@ -60,10 +60,14 @@ var DDD = createHostComponent.default('ddd');
 function ReactComp(_ref) {
   var children = _ref.children;
   return React.createElement(React.Fragment, null, React.createElement(index$2.default, {
-    _tid: "1"
-  }, React.createElement("stub-block", null), React.createElement(React.Fragment, null, React.createElement("stub-block", null)), React.createElement("block", null, React.createElement(index$2.default, {
-    _tid: "2"
+    _tid: "9"
+  }, React.createElement(index$9.default, null, "react component"), React.createElement(React.Fragment, null, React.createElement(index$9.default, null, "Text inside Fragment")), React.createElement("block", null, React.createElement(index$2.default, {
+    _tid: "10"
   }, "View inside Expression")), React.createElement("block", null, React.Children.map(children, function (child, index) {
+    if (index === 2) {
+      return child;
+    }
+
     return React.cloneElement(child, {
       id: 'reactComp' + index
     });
@@ -89,67 +93,74 @@ function _ref2() {
 
   var plainText = 'plain-text-leaf';
   return React.createElement(React.Fragment, null, React.createElement("block", {
-    _tid: "3"
-  }, 'expression entry'), React.createElement(React.Fragment, null, React.createElement(index$9.default, {
-    _tid: "4"
-  }, "Fragment Text 1"), React.createElement(index$9.default, {
-    _tid: "5"
-  }, "Fragment Text 2"), React.createElement(React.Fragment, null, React.createElement(index$9.default, {
-    _tid: "6"
-  }, "Fragment Text 3"), React.createElement(index$9.default, {
-    _tid: "7"
-  }, "Fragment Text 4"))), React.createElement(React.Fragment, null, "Fragment"), React.createElement(React.Fragment, null, "React.Fragment"), React.createElement("block", {
-    _tid: "8"
-  }, React.createElement(DDD, null)), React.createElement(index$9.default, {
-    _tid: "9"
-  }, "Remax.Text"), React.createElement("block", {
-    _tid: "10"
-  }, React.createElement(NativeComponent, null)), React.createElement("block", {
     _tid: "11"
-  }, React.createElement(ReactComp, null, React.createElement(index$2.default, {
-    _tid: "26"
-  }, "React Component First Child"), React.createElement("block", null, 'React Component Second Child'))), React.createElement(index$2.default, {
+  }, 'expression entry'), React.createElement(React.Fragment, null, React.createElement(index$9.default, {
     _tid: "12"
+  }, "Fragment Text 1"), React.createElement(index$9.default, {
+    _tid: "13"
+  }, "Fragment Text 2"), React.createElement(React.Fragment, null, React.createElement(index$9.default, {
+    _tid: "14"
+  }, "Fragment Text 3"), React.createElement(index$9.default, {
+    _tid: "15"
+  }, "Fragment Text 4"))), React.createElement(React.Fragment, null, "Fragment"), React.createElement(React.Fragment, null, "React.Fragment"), React.createElement("block", {
+    _tid: "16"
+  }, React.createElement(DDD, null)), React.createElement(index$9.default, {
+    _tid: "17"
+  }, "Remax.Text"), React.createElement("block", {
+    _tid: "18"
+  }, React.createElement(NativeComponent, null)), React.createElement("block", {
+    _tid: "19"
+  }, React.createElement(ReactComp, null, React.createElement(index$2.default, {
+    _tid: "34"
+  }, "React Component First Child"), React.createElement("block", null, 'React Component Second Child'), React.createElement(index$2.default, {
+    _tid: "35"
+  }, "React Component Third Child"))), React.createElement(index$2.default, {
+    className: "className",
+    _tid: "20"
   }, "Count: ", React.createElement("block", null, count)), React.createElement(index$2.default, {
     id: count,
-    _tid: "13"
+    className: 'class',
+    _tid: "21"
   }, "view"), React.createElement(index$2.default, {
-    _tid: "14"
+    _tid: "22"
   }, "custom view"), React.createElement("block", {
-    _tid: "15"
+    _tid: "23"
   }, React.createElement('view', {
     id: 'view'
   }, [React.createElement(index$2.default, {
-    _tid: "27"
+    key: "1",
+    _tid: "36"
   }, "create element children 1"), React.createElement('view', {
     key: '2'
   })])), React.createElement("block", {
-    _tid: "16"
+    _tid: "24"
   }, [1, 2, 3].map(function (item) {
     return React.createElement(index$2.default, {
       key: item,
-      _tid: "28"
+      _tid: "37"
     }, "array map: ", React.createElement("block", null, item));
   })), React.createElement(index$2.default, _rollupPluginBabelHelpers.extends({}, props, {
-    _tid: "17"
-  }), "Spread Attributes View"), React.createElement(index$9.default, {
-    _tid: "18"
-  }, "long long long long long long long long long long long long text long long long long long long long long long long long long text"), React.createElement("block", {
-    _tid: "19"
-  }, React.createElement(index$z.default, null)), React.createElement("block", {
-    _tid: "20"
-  }, 'Literal Expression'), React.createElement("block", {
-    _tid: "21"
-  }, React.createElement(Deep.Object.View, null, "Deep Object View")), React.createElement("block", {
-    _tid: "22"
-  }, React.createElement(RenameView, null, "Rename View")), React.createElement("block", {
-    _tid: "23"
-  }, show && React.createElement(index$2.default, {
-    _tid: "29"
-  }, "Conditional View")), React.createElement(index$9.default, {
-    _tid: "24"
-  }, showPlainText && plainText), React.createElement(index$2.default, {
     _tid: "25"
+  }), "Spread Attributes View"), React.createElement(index$9.default, {
+    _tid: "26"
+  }, "long long long long long long long long long long long long text long long long long long long long long long long long long text"), React.createElement("block", {
+    _tid: "27"
+  }, React.createElement(index$z.default, null)), React.createElement("block", {
+    _tid: "28"
+  }, 'Literal Expression'), React.createElement("block", {
+    _tid: "29"
+  }, React.createElement(Deep.Object.View, null, "Deep Object View")), React.createElement("block", {
+    _tid: "30"
+  }, React.createElement(RenameView, null, "Rename View")), React.createElement("block", {
+    _tid: "31"
+  }, show && React.createElement(index$2.default, {
+    _tid: "38"
+  }, "Conditional View")), React.createElement(index$9.default, {
+    leaf: true,
+    _tid: "32"
+  }, showPlainText && plainText), React.createElement(index$2.default, {
+    "ns:attr": "1",
+    _tid: "33"
   }));
 }
 

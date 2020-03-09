@@ -1,9 +1,11 @@
 import * as t from '@babel/types';
+import { kebabCase } from 'lodash';
 import { NodePath } from '@babel/traverse';
-import { TEMPLATE_ID, ENTRY } from '../constants';
+import { TEMPLATE_ID, ENTRY, REACT_KEY } from '../constants';
 import { createTemplate, templateInfoMap } from '../render/templates';
-import { JSXNode, RenderNode } from '../types';
+// import { asStubElement } from '../postProcess';
 import * as helpers from '../helpers';
+import { RenderNode, JSXNode, RawRenderNode } from 'remax-types';
 
 /**
  * 判断 JSX 元素是否处于一段 JSX 片段的顶部
@@ -84,15 +86,12 @@ function markTemplateID(element: t.JSXOpeningElement): string {
 }
 
 /**
- * 整理 JSXNodes，主要目的是消化 JSXFragment，得到正确的 Node 结构
- *
- * @param {JSXNode} node
- * @returns {RenderNode[]}
+ * 整理 JSXNodes，转换为 RenderNodes，主要目的是消化 JSXFragment，得到正确的 Node 结构
  */
-function sortNodes(node: JSXNode): RenderNode[] {
+function toRenderNodes(node: JSXNode): RenderNode[] {
   if (t.isJSXFragment(node)) {
     return node.children.reduce<RenderNode[]>(
-      (prev, current) => prev.concat(sortNodes(current)),
+      (prev, current) => prev.concat(toRenderNodes(current)),
       []
     );
   }
@@ -102,7 +101,7 @@ function sortNodes(node: JSXNode): RenderNode[] {
       {
         node,
         children: node.children.reduce<RenderNode[]>(
-          (prev, current) => prev.concat(sortNodes(current)),
+          (prev, current) => prev.concat(toRenderNodes(current)),
           []
         ),
       },
@@ -122,6 +121,44 @@ function sortNodes(node: JSXNode): RenderNode[] {
 }
 
 /**
+ * 将 RenderNode 转换成 JSON 结构
+ */
+function toJSON(renderNode: RenderNode, path: NodePath) {
+  const { node, children } = renderNode;
+  const json: RawRenderNode = {
+    type: '',
+    children: [],
+    props: {},
+  };
+
+  if (t.isJSXElement(node)) {
+    json.type = kebabCase(helpers.getHostComponentName(node, path));
+    const { props } = helpers.getProps(
+      node.openingElement.attributes,
+      json.type,
+      false
+    );
+    json.props = props
+      .map(([prop]) => prop)
+      .filter(prop => ![REACT_KEY].find(k => k === prop));
+    json.children = children
+      // 将空的 JSXText 去除
+      .filter(c => !helpers.isEmptyText(c.node))
+      .map(c => toJSON(c, path));
+  }
+
+  if (t.isJSXText(node)) {
+    json.type = 'plain-text';
+  }
+
+  // case JSXSpreadChild 未知情形
+  // case JSXFragment 已经在 toRenderNodes 时全部处理掉了
+  // case: JSXExpressionContainer，逻辑上表达式被包裹在 EXPRESSION_BLOCK 标签中，不会被比较到。
+
+  return json;
+}
+
+/**
  * 遍历 JSX 元素，生成所有模板
  *
  * @param {(NodePath<t.JSXElement | t.JSXFragment>)} path
@@ -136,29 +173,35 @@ function renderTemplates(
     return;
   }
 
-  const nodes = sortNodes(path.node);
+  const renderNodes = toRenderNodes(path.node);
 
-  nodes.forEach(node => {
+  renderNodes.forEach(renderNode => {
     // case: JSXExpressionContainer 已经都被包裹在 block 里面，entry 中不会有
     // case: JSXFragment 已经被 sortNodes 方法处理掉了，不会出现
     // case: JSXText TODO: 由于 JSXText 无法记录 template id，这里先不处理
     // case: JSXSpreadChild 未知使用场景
-    if (!t.isJSXElement(node.node)) {
+    if (!t.isJSXElement(renderNode.node)) {
       return;
     }
 
     const module = state.filename;
-    const templateID = markTemplateID(node.node.openingElement);
+    const templateID = markTemplateID(renderNode.node.openingElement);
 
     if (templateInfoMap.has(templateID)) {
       return;
     }
 
+    const template = createTemplate(renderNode, path, module, ['node']);
+    // asStubElement(node, path);
+    const json = toJSON(renderNode, path);
+
     templateInfoMap.set(
+      renderNode,
       templateID,
-      createTemplate(node, path, module, ['node']),
       module,
-      isEntry(path.node)
+      template,
+      json,
+      isEntry(renderNode.node)
     );
   });
 }

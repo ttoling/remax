@@ -4,18 +4,12 @@ import { NodePath } from '@babel/traverse';
 import JSXElement from './JSXElement';
 import JSXExpressionContainer from './JSXExpressionContainer';
 import TemplateInfoMap from './TemplateInfoMap';
-import { RenderNode } from '../../types';
+import { RenderNode } from 'remax-types';
 
 export const templateInfoMap = new TemplateInfoMap();
 
 /**
  * 创建单个原生模板
- *
- * @param element
- * @param {NodePath} path
- * @param {string} module
- * @param {(Array<string | number>)} dataPath
- * @returns {string}
  */
 export function createTemplate(
   element: RenderNode,

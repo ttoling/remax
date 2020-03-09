@@ -1,14 +1,13 @@
 import * as t from '@babel/types';
 import { NodePath } from '@babel/traverse';
-import { JSXNode } from './types';
+import { JSXNode } from 'remax-types';
 import { EXPRESSION_BLOCK, LEAF, TEMPLATE_ID, STUB_BLOCK } from './constants';
+import API from '../../../../API';
 
 /**
  * 从 JSXElement 中取出 Host Component 的名称
  * 必须已经确定是 JSXElement 属于 Host Component
  * 可以通过 isHostComponent 判断
- * @param node JSXElement
- * @param path NodePath
  */
 export function getHostComponentName(node: t.JSXElement, path: NodePath) {
   if (t.isJSXIdentifier(node.openingElement.name)) {
@@ -36,8 +35,6 @@ export function getHostComponentName(node: t.JSXElement, path: NodePath) {
 
 /**
  * 判断 JSXElement 是否是 Host Component
- * @param node JSXElement|JSXFragment
- * @param path NodePath
  */
 export function isHostComponentElement(
   node: t.JSXElement | t.JSXFragment,
@@ -116,8 +113,6 @@ export function isHostComponentElement(
 
 /**
  * 判断是否是 expression block
- *
- * @param path NodePath
  */
 export function isExpressionBlock(path: any) {
   return path?.node?.openingElement?.name?.name === EXPRESSION_BLOCK;
@@ -125,8 +120,6 @@ export function isExpressionBlock(path: any) {
 
 /**
  * 判断是否是 <React.Fragment></React.Fragment> 或 <></>
- * @param node JSXElement|JSXFragment
- * @param path NodePath
  */
 export function isReactFragment(
   node: t.JSXElement | t.JSXFragment,
@@ -186,11 +179,6 @@ export function isReactFragment(
 
 /**
  * 通过名称查找属性
- *
- * @export
- * @param {string} name
- * @param {t.JSXOpeningElement['attributes']} attributes
- * @returns
  */
 export function getAttributeByName(
   name: string,
@@ -203,10 +191,6 @@ export function getAttributeByName(
 
 /**
  * 从 attributes 中获取 leaf 属性
- *
- * @export
- * @param {t.JSXOpeningElement} element
- * @returns
  */
 export function getLeafAttribute(element: t.JSXOpeningElement) {
   const attribute = getAttributeByName(LEAF, element.attributes) as
@@ -218,10 +202,6 @@ export function getLeafAttribute(element: t.JSXOpeningElement) {
 
 /**
  * 从 attributes 中获取 template id
- *
- * @export
- * @param {t.JSXOpeningElement} element
- * @returns
  */
 export function getTemplateID(element: t.JSXOpeningElement) {
   const attribute: any = getAttributeByName(TEMPLATE_ID, element.attributes);
@@ -233,9 +213,6 @@ export function getTemplateID(element: t.JSXOpeningElement) {
  * 判断是否是 Leaf 节点
  * 组件标记了 leaf 属性时，说明其子节点是单节点
  * 目前只有 plain text 文本情况
- *
- * @param {NodePath<t.JSXElement>} path
- * @returns
  */
 export function isPlainTextLeaf(node: t.Node, path: NodePath) {
   if (!t.isJSXElement(node)) {
@@ -251,11 +228,6 @@ export function isPlainTextLeaf(node: t.Node, path: NodePath) {
 
 /**
  * 用标签包裹当前 node
- *
- * @export
- * @param node
- * @param {NodePath} path
- * @returns
  */
 export function wrappedByElement(name: string, node: JSXNode, path: NodePath) {
   path.replaceWith(
@@ -270,7 +242,6 @@ export function wrappedByElement(name: string, node: JSXNode, path: NodePath) {
 
 /**
  * 用 <block> 标签包裹，用于处理无法静态化的标签和表达式
- *
  */
 export function wrappedByExpressionBlock(node: JSXNode, path: NodePath) {
   // 如果不是在一个 JSXElement|JSXFragment 中，则不处理
@@ -292,10 +263,6 @@ export function wrappedByExpressionBlock(node: JSXNode, path: NodePath) {
 
 /**
  * 将标签替换成 JSXFragment
- *
- * @export
- * @param {(t.JSXElement)} node
- * @param {NodePath} path
  */
 export function replacedWithJSXFragment(node: t.JSXElement, path: NodePath) {
   path.replaceWith(
@@ -305,10 +272,6 @@ export function replacedWithJSXFragment(node: t.JSXElement, path: NodePath) {
 
 /**
  * 将标签替换为 <stub-block>
- *
- * @export
- * @param {(t.JSXElement)} node
- * @param {NodePath} path
  */
 export function replacedWithStubBlock(node: t.JSXElement, path: NodePath) {
   path.replaceWith(
@@ -324,10 +287,6 @@ export function replacedWithStubBlock(node: t.JSXElement, path: NodePath) {
 /**
  * 判断是否是空的 JSXText
  * 空的含义是，只包含空格，换行符，空字符串的 JSXText
- *
- * @export
- * @param node
- * @returns
  */
 export function isEmptyText(node: JSXNode) {
   if (!t.isJSXText(node)) {
@@ -350,10 +309,6 @@ export function isEmptyText(node: JSXNode) {
  * case A: 由开标签 <Text> 到第二行的 'text1' 前的这部分换行+空格组成的字符串需要剔除
  * case B: 由第二行 'text1' 结尾到第三行的 'text2'前的这部分换行+空格组成的字符串需要处理成一个空格 ' '
  * case C: 由第三行 'text2' 结尾到第四行的闭标签 </Text>前的这部分换行+空格组成的字符串需要剔除
- *
- * @export
- * @param {string} literal
- * @returns
  */
 export function normalizeLiteral(literal: string) {
   // case A
@@ -372,4 +327,63 @@ export function normalizeLiteral(literal: string) {
   }
 
   return literal;
+}
+
+/**
+ * 从 attributes 中获取属性
+ * 返回值为 [hasSpreadAttribute, props[]]
+ */
+export function getProps(
+  attributes: Array<t.JSXAttribute | t.JSXSpreadAttribute>,
+  type: string,
+  alias = true
+): {
+  hasSpreadAttribute: boolean;
+  props: Array<[string, any]>;
+} {
+  const hostComponent = API.getHostComponents().get(type);
+  let hasSpreadAttribute = false;
+
+  // case: Spread Attributes
+  // 包含了 Spread Attributes 就返回所有属性
+  if (hostComponent && attributes.find(attr => t.isJSXSpreadAttribute(attr))) {
+    hasSpreadAttribute = true;
+    let props: Array<[string, any]> = [];
+
+    props = (alias
+      ? hostComponent.props
+      : Object.keys(hostComponent.alias || {})
+    ).map(prop => [prop, null]);
+
+    return {
+      hasSpreadAttribute,
+      props,
+    };
+  }
+
+  return {
+    hasSpreadAttribute: false,
+    props: (attributes as t.JSXAttribute[]).map(attr => {
+      const name = attr.name;
+      let attrName = '';
+
+      if (t.isJSXIdentifier(name)) {
+        attrName = name.name;
+      }
+
+      if (t.isJSXNamespacedName(name)) {
+        attrName = name.namespace.name + ':' + name.name.name;
+      }
+
+      let prop;
+
+      if (alias) {
+        prop = hostComponent?.alias?.[attrName] ?? attrName;
+      } else {
+        prop = attrName;
+      }
+
+      return [prop, attr.value];
+    }),
+  };
 }

@@ -25,9 +25,12 @@ function ReactComp({ children }) {
           <Text>Text inside Fragment</Text>
         </>
         {<View>View inside Expression</View>}
-        {React.Children.map(children, (child, index) =>
-          React.cloneElement(child, { id: 'reactComp' + index })
-        )}
+        {React.Children.map(children, (child, index) => {
+          if (index === 2) {
+            return child;
+          }
+          return React.cloneElement(child, { id: 'reactComp' + index });
+        })}
       </View>
     </>
   );
@@ -58,8 +61,9 @@ export default function Index() {
       <Remax.Text>Remax.Text</Remax.Text>
       <NativeComponent />
       <ReactComp>
-        <View show>React Component First Child</View>
+        <View>React Component First Child</View>
         {'React Component Second Child'}
+        <View>React Component Third Child</View>
       </ReactComp>
       <View className="className">Count: {count}</View>
       <View id={count} className={'class'}>
