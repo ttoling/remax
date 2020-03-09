@@ -25,7 +25,7 @@ function toRawNode(node: VNode) {
 
   const props = propsAlias(node.props, node.type);
 
-  if (didVNodeHasSideEffect(node)) {
+  if (didVNodeHasSideEffect(node) && props?.[TEMPLATE_ID]) {
     delete props[TEMPLATE_ID];
   }
 
